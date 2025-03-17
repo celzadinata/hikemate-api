@@ -30,4 +30,8 @@ public class Hiker extends DateUtils {
 
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true, nullable = true)
+    private UserAccount userAccount;
 }

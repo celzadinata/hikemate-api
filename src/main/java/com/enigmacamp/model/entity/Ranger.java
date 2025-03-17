@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Data
@@ -24,8 +22,8 @@ public class Ranger extends DateUtils {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "mountain_id")
+    @OneToOne
+    @JoinColumn(name = "mountain_id", unique = true, nullable = true)
     private Mountain mountain;
 
     @Column(name = "name", nullable = false)
@@ -37,4 +35,8 @@ public class Ranger extends DateUtils {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Column(name = "assigned_at", nullable = false)
     private Timestamp assignedAt;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true, nullable = true)
+    private UserAccount userAccount;
 }
