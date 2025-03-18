@@ -1,5 +1,7 @@
 package com.enigmacamp.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.enigmacamp.model.entity.Image;
 import com.enigmacamp.repository.ImageRepository;
 import com.enigmacamp.service.ImageService;
@@ -14,11 +16,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ImageServiceImpl implements ImageService {
     private final Path path;
     private final ImageRepository imageRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Autowired
     public ImageServiceImpl(@Value("${app.hikemate.upload.path}") String path, ImageRepository imageRepository) {
@@ -27,18 +33,17 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image create(MultipartFile multipartFile) {
+    public Image create(MultipartFile multipartFile, String folderName) {
         try {
-//            if (!List.of("image/jpeg", "image/png", "image/gif", "image/jpg").contains(multipartFile.getContentType())) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type not supported");
-//            }
-            String uniqueFileName = System.currentTimeMillis() + "-" + multipartFile.getOriginalFilename();
-            Path filePath = path.resolve(uniqueFileName);
-            Files.write(filePath, multipartFile.getBytes());
+            if (!List.of("image/jpeg", "image/png", "image/gif", "image/jpg").contains(multipartFile.getContentType())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File type not supported");
+            }
+
+            Map uploadUrl = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.asMap("folder", folderName));
 
             Image image = Image.builder()
                     .name(multipartFile.getName())
-                    .path(filePath.toString())
+                    .path(cloudinary.url().secure(true).generate(uploadUrl.get("public_id").toString()))
                     .size(multipartFile.getSize())
                     .contentType(multipartFile.getContentType())
                     .build();

@@ -1,5 +1,7 @@
 package com.enigmacamp.config;
 
+import com.cloudinary.Cloudinary;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +16,9 @@ import java.util.Arrays;
 
 @Configuration
 public class BeanConfiguration {
+
+    @Value("${app.cloudinary-url}")
+    private String cloudinaryUrl;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -37,5 +42,10 @@ public class BeanConfiguration {
         source.registerCorsConfiguration("/**", configuration);
         return source;
 
+    }
+
+    @Bean
+    public Cloudinary cloudinary() {
+        return new Cloudinary(cloudinaryUrl);
     }
 }

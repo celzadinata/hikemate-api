@@ -1,5 +1,6 @@
 package com.enigmacamp.service.impl;
 
+import com.enigmacamp.constant.Tables;
 import com.enigmacamp.model.dto.request.MountainRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.MountainResponse;
@@ -57,7 +58,7 @@ public class MountainServiceImpl implements MountainService {
         newMountain.setUpdatedAt(currentTimeStamp);
 
         if (request.getImage() != null) {
-            Image image = imageService.create(request.getImage());
+            Image image = imageService.create(request.getImage(), Tables.MOUNTAINS);
             newMountain.setImage(image);
         }
         Mountain mountain = mountainRepository.save(newMountain);
