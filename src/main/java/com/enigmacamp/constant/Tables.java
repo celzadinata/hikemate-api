@@ -8,4 +8,5 @@ public class Tables {
     public static final String HIKER = "hikers";
     public static final String USER_ACCOUNTS = "user_accounts";
     public static final String ROLES = "roles";
+    public static final String IMAGES = "images";
 }

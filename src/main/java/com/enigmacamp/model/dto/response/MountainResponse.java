@@ -18,6 +18,8 @@ public class MountainResponse {
     private String location;
     private String status;
     private BigDecimal price;
+    private String imageId;
+    private RangerResponse rangerResponse;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Timestamp deletedAt;

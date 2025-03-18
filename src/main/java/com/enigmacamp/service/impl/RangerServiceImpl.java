@@ -3,6 +3,7 @@ package com.enigmacamp.service.impl;
 import com.enigmacamp.model.dto.request.RangerRequest;
 import com.enigmacamp.model.dto.response.RangerResponse;
 import com.enigmacamp.model.entity.Ranger;
+import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.repository.RangerRepository;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.mapper.RangerMapper;
@@ -33,5 +34,15 @@ public class RangerServiceImpl implements RangerService {
         newRanger.setUpdatedAt(currentTimeStamp);
 
         return rangerMapper.entityToResponse(rangerRepository.save(newRanger));
+    }
+
+    @Override
+    public Ranger getByIdEntity(String id) {
+        return rangerRepository.findById(id).orElseThrow(() -> new RuntimeException("Ranger not found"));
+    }
+
+    @Override
+    public Ranger getByUserAccountEntity(UserAccount userAccount) {
+        return rangerRepository.findRangerByUserAccount(userAccount).orElseThrow(() -> new RuntimeException("Ranger not found"));
     }
 }

@@ -35,4 +35,8 @@ public class Mountain extends DateUtils {
 
     @Column(name = "price", columnDefinition = "BIGINT CHECK(price > 0)", nullable = false)
     private BigDecimal price;
+
+    @OneToOne
+    @JoinColumn(name = "image_id", nullable = true, unique = true)
+    private Image image;
 }
