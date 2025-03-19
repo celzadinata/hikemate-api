@@ -105,9 +105,20 @@ public class RangerServiceImpl implements RangerService {
         return null;
     }
 
+    @Override
+    public Ranger getByIdEntity(String id) {
+        return findByIdOrThrowNotFound(id);
+    }
+
+    @Override
+    public Ranger getByUserAccountEntity(UserAccount userAccount) {
+        return rangerRepository.findRangerByUserAccount(userAccount).orElseThrow(() -> new RuntimeException("Ranger not found"));
+    }
+
     private Ranger findByIdOrThrowNotFound(String id){
         return rangerRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("customer Not Found", new RuntimeException("customer ga ketemu"))
         );
     }
 }
+

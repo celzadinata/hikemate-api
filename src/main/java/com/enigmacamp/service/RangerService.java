@@ -13,4 +13,6 @@ public interface RangerService {
     RangerResponse getById(String id);
     RangerResponse updateRanger(RangerRequest request);
     void delete(String id);
+    Ranger getByIdEntity(String id);
+    Ranger getByUserAccountEntity(UserAccount userAccount);
 }

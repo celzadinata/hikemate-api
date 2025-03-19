@@ -11,6 +11,7 @@ public class HikerMapper implements EntityMapper<Hiker, HikerRequest, HikerRespo
     @Override
     public HikerResponse entityToResponse(Hiker entity) {
         return HikerResponse.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())

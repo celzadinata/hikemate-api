@@ -14,4 +14,6 @@ public interface HikerService {
     HikerResponse getById(String id);
     HikerResponse updateHiker(HikerRequest request);
     void delete(String id);
+    Hiker getByIdEntity(String id);
 }
+

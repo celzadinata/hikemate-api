@@ -99,6 +99,11 @@ public class HikerServiceImpl implements HikerService {
         return null;
     }
 
+    @Override
+    public Hiker getByIdEntity(String id) {
+        return findByIdOrThrowNotFound(id);
+    }
+
     private Hiker findByIdOrThrowNotFound(String id){
         return hikerRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("customer Not Found", new RuntimeException("customer ga ketemu"))

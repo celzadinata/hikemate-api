@@ -7,4 +7,6 @@ public class APIUrl {
     public static final String TRANSACTION_API = VERSION_API + "/transactions";
     public static final String HIKER_API = VERSION_API + "/hikers";
     public static final String AUTH = VERSION_API + "/auth";
+    public static final String IMAGE_API = VERSION_API + "/images";
+    public static final String PAYMENT_API = VERSION_API + "/payments";
 }

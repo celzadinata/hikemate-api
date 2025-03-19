@@ -12,7 +12,7 @@ public class RangerMapper implements EntityMapper<Ranger, RangerRequest, RangerR
     @Override
     public RangerResponse entityToResponse(Ranger entity) {
         return RangerResponse.builder()
-                .id(entity.getName())
+                .id(entity.getId())
                 .name(entity.getName())
                 .assignedAt(entity.getAssignedAt())
                 .phoneNumber(entity.getPhoneNumber())
