@@ -3,6 +3,8 @@ package com.enigmacamp.service;
 import com.enigmacamp.model.dto.request.RangerRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.RangerResponse;
+import com.enigmacamp.model.entity.Ranger;
+import com.enigmacamp.model.entity.UserAccount;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

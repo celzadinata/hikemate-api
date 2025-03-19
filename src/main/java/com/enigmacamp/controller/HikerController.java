@@ -35,7 +35,7 @@ public class HikerController {
         direction = PagingUtil.validateDirection(direction);
 
         SearchRequest request = SearchRequest.builder()
-                .search(search)
+                .query(search)
                 .page(page)
                 .size(size)
                 .direction(direction)

@@ -4,6 +4,7 @@ import com.enigmacamp.model.dto.request.RangerRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.RangerResponse;
 import com.enigmacamp.model.entity.Ranger;
+import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.repository.RangerRepository;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
@@ -55,7 +56,7 @@ public class RangerServiceImpl implements RangerService {
                 direction,
                 fieldName
         );
-        Specification<Ranger> specification = hitAllSpecification(pageable.getSearch(), fieldName);
+        Specification<Ranger> specification = hitAllSpecification(pageable.getQuery(), fieldName);
         Page<Ranger> rangers;
 
         if (specification != null) {

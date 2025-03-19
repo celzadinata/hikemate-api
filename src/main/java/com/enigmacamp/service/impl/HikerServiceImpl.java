@@ -52,7 +52,7 @@ public class HikerServiceImpl implements HikerService {
                 direction,
                 FieldName
         );
-        Specification<Hiker> specification = hitAllSpecification(pageable.getSearch(), FieldName);
+        Specification<Hiker> specification = hitAllSpecification(pageable.getQuery(), FieldName);
         Page<Hiker> hikers;
         if (specification != null) {
             hikers = hikerRepository.findAll(specification, page);
