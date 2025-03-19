@@ -21,6 +21,7 @@ public class TransactionResponse {
     private Boolean isUp;
     private Boolean isDown;
     private String qrCodeUrl;
+    private String paymentUrl;
     private String paymentStatus;
     private HikerResponse hiker;
     private RangerResponse ranger;

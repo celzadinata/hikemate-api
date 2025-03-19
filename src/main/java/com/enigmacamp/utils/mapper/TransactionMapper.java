@@ -35,7 +35,8 @@ public class TransactionMapper implements EntityMapper<Transaction, TransactionR
                 .hiker(hikerMapper.entityToResponse(entity.getHiker()))
                 .mountain(mountainMapper.entityToResponse(entity.getMountain()))
                 .ranger(rangerMapper.entityToResponse(entity.getRanger()))
-//                .paymentStatus(entity.getPayment().getTransactionStatus().name())
+                .paymentStatus(entity.getPayment() != null? entity.getPayment().getTransactionStatus().name() : null)
+                .paymentUrl(entity.getPayment() != null? entity.getPayment().getRedirectUrl() : null)
                 .build();
     }
 

@@ -3,15 +3,9 @@ package com.enigmacamp.service.impl;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.request.TransactionRequest;
 import com.enigmacamp.model.dto.response.TransactionResponse;
-import com.enigmacamp.model.entity.Hiker;
-import com.enigmacamp.model.entity.Mountain;
-import com.enigmacamp.model.entity.Ranger;
-import com.enigmacamp.model.entity.Transaction;
+import com.enigmacamp.model.entity.*;
 import com.enigmacamp.repository.TransactionRepository;
-import com.enigmacamp.service.HikerService;
-import com.enigmacamp.service.MountainService;
-import com.enigmacamp.service.RangerService;
-import com.enigmacamp.service.TransactionService;
+import com.enigmacamp.service.*;
 import com.enigmacamp.utils.mapper.TransactionMapper;
 import com.enigmacamp.utils.specifications.TransactionSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +37,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private RangerService rangerService;
 
+    @Autowired
+    private PaymentService paymentService;
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public TransactionResponse create(TransactionRequest request) {
@@ -59,7 +56,11 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setUpdatedAt(currentTimeStamp);
         newTransaction.setPrice(mountain.getPrice());
 
-        return transactionMapper.entityToResponse(transactionRepository.save(newTransaction));
+        transactionRepository.save(newTransaction);
+        Payment payment = paymentService.createPayment(newTransaction);
+        newTransaction.setPayment(payment);
+
+        return transactionMapper.entityToResponse(newTransaction);
     }
 
     @Override
@@ -91,6 +92,11 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         return transactionMapper.entityToResponse(transactionRepository.saveAndFlush(transactionFound));
+    }
+
+    @Override
+    public Transaction getByIdEntity(String id) {
+        return findByIdOrThrowNotFound(id);
     }
 
     private Transaction findByIdOrThrowNotFound(String id){
