@@ -68,7 +68,8 @@ public class MountainController {
             @RequestParam(name = "startPrice", required = false) String startPrice,
             @RequestParam(name = "endPrice", required = false) String endPrice,
             @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "location", required = false) String location
+            @RequestParam(name = "location", required = false) String location,
+            @RequestParam(name = "ranger_id", required = false) String rangerId
     ) {
 
         SearchRequest searchRequest = SearchRequest.builder()
@@ -79,7 +80,7 @@ public class MountainController {
                 .query(name)
                 .build();
 
-        Page<MountainResponse> mountainResponses = mountainService.getAll(name, startPrice, endPrice, status,location, searchRequest);
+        Page<MountainResponse> mountainResponses = mountainService.getAll(name, startPrice, endPrice, status, rangerId, location, searchRequest);
 
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(mountainResponses.getTotalPages())

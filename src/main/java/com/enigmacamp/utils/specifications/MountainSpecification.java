@@ -1,6 +1,7 @@
 package com.enigmacamp.utils.specifications;
 
 import com.enigmacamp.model.entity.Mountain;
+import com.enigmacamp.model.entity.Ranger;
 import com.enigmacamp.utils.UtilityTool;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -18,6 +19,7 @@ public class MountainSpecification implements Specification<Mountain> {
     private final String startPrice;
     private final String endPrice;
     private final String status;
+    private final Ranger ranger;
     private final String location;
 
     @Override
@@ -26,6 +28,9 @@ public class MountainSpecification implements Specification<Mountain> {
 
         if (name != null && !name.isEmpty()) {
             predicates.add(criteriaBuilder.like(root.get("name"), "%" + name + "%"));
+        }
+        if (ranger != null) {
+            predicates.add(criteriaBuilder.like(root.get("ranger"), "%" + ranger + "%"));
         }
         if (status != null && !status.isEmpty()) {
             predicates.add(criteriaBuilder.like(root.get("status"), "%" + status.toUpperCase() + "%"));
