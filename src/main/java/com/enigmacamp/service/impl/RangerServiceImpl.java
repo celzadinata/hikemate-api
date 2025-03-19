@@ -3,9 +3,11 @@ package com.enigmacamp.service.impl;
 import com.enigmacamp.model.dto.request.RangerRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.RangerResponse;
+import com.enigmacamp.model.entity.Mountain;
 import com.enigmacamp.model.entity.Ranger;
 import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.repository.RangerRepository;
+import com.enigmacamp.service.MountainService;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.RangerMapper;
@@ -114,6 +116,14 @@ public class RangerServiceImpl implements RangerService {
     @Override
     public Ranger getByUserAccountEntity(UserAccount userAccount) {
         return rangerRepository.findRangerByUserAccount(userAccount).orElseThrow(() -> new RuntimeException("Ranger not found"));
+    }
+
+    @Override
+    public RangerResponse getByMountainId(Mountain mountain) {
+        Ranger ranger = rangerRepository.findByMountain(mountain)
+                .orElseThrow(() -> new RuntimeException("No ranger found for this mountain!"));
+
+        return rangerMapper.entityToResponse(ranger);
     }
 
     private Ranger findByIdOrThrowNotFound(String id){

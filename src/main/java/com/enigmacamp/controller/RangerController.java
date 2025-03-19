@@ -8,6 +8,8 @@ import com.enigmacamp.model.dto.response.CommonResponse;
 import com.enigmacamp.model.dto.response.PagingResponse;
 import com.enigmacamp.model.dto.response.RangerResponse;
 import com.enigmacamp.model.dto.response.RegisterResponse;
+import com.enigmacamp.model.entity.Mountain;
+import com.enigmacamp.service.MountainService;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.mapper.PagingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ import java.util.List;
 public class RangerController {
     @Autowired
     private RangerService rangerService;
+
+    @Autowired
+    private MountainService mountainService;
 
     @PostMapping
     public ResponseEntity<CommonResponse<RangerResponse>> addNewRanger(@RequestBody AssignRangerRequest req) {
@@ -124,6 +129,19 @@ public class RangerController {
     public ResponseEntity<Void> deleteRanger(@PathVariable String id) {
         rangerService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/ranger-mountain/{mountainId}")
+    public ResponseEntity<CommonResponse<RangerResponse>> getRangerByMountainId(@PathVariable String mountainId) {
+        Mountain mountain = mountainService.getByIdEntity(mountainId);
+        RangerResponse ranger = rangerService.getByMountainId(mountain);
+        CommonResponse<RangerResponse> response = CommonResponse
+                .<RangerResponse>builder()
+                .status(HttpStatus.OK.value())
+                .message("Ranger found")
+                .data(ranger)
+                .build();
+        return ResponseEntity.ok(response);
     }
 }
 
