@@ -79,21 +79,21 @@ public class MountainController {
                 .query(name)
                 .build();
 
-        Page<MountainResponse> budgetTransactionResponses = mountainService.getAll(name, startPrice, endPrice, status,location, searchRequest);
+        Page<MountainResponse> mountainResponses = mountainService.getAll(name, startPrice, endPrice, status,location, searchRequest);
 
         PagingResponse pagingResponse = PagingResponse.builder()
-                .totalPages(budgetTransactionResponses.getTotalPages())
-                .totalElements(budgetTransactionResponses.getTotalElements())
+                .totalPages(mountainResponses.getTotalPages())
+                .totalElements(mountainResponses.getTotalElements())
                 .page(page)
                 .size(size)
-                .hasNext(budgetTransactionResponses.hasNext())
-                .hasPrevious(budgetTransactionResponses.hasPrevious())
+                .hasNext(mountainResponses.hasNext())
+                .hasPrevious(mountainResponses.hasPrevious())
                 .build();
 
         CommonResponse<List<MountainResponse>> response = CommonResponse.<List<MountainResponse>>builder()
                 .status(HttpStatus.OK.value())
                 .message("Success fetching mountain datas")
-                .data(budgetTransactionResponses.getContent())
+                .data(mountainResponses.getContent())
                 .paging(pagingResponse)
                 .build();
 
@@ -104,11 +104,11 @@ public class MountainController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CommonResponse<MountainResponse>> getMountainById(@PathVariable String id){
-        MountainResponse customerResponse = mountainService.getById(id);
+        MountainResponse mountainResponse = mountainService.getById(id);
         CommonResponse<MountainResponse> response = CommonResponse.<MountainResponse>builder()
                 .status(HttpStatus.OK.value())
-                .message("Success fetching mountain with id: " + customerResponse.getId())
-                .data(customerResponse)
+                .message("Success fetching mountain with id: " + mountainResponse.getId())
+                .data(mountainResponse)
                 .build();
 
         return ResponseEntity

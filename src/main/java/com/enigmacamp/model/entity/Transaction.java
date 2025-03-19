@@ -1,10 +1,8 @@
 package com.enigmacamp.model.entity;
 
 import com.enigmacamp.constant.Tables;
-import com.enigmacamp.constant.enums.TransactionStatus;
 import com.enigmacamp.model.utils.DateUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Data
 @Builder
@@ -28,21 +25,42 @@ public class Transaction extends DateUtils {
     private String id;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "hiker_id")
+    @JoinColumn(name = "hiker_id", nullable = true)
     private Hiker hiker;
 
-    @Column(name = "total_amount", nullable = false, columnDefinition = "BIGINT CHECK(total_amount > 0)")
-    private BigDecimal totalAmount;
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "ranger_pic_id", nullable = true)
+    private Ranger ranger;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "mountain_id", nullable = true)
+    private Mountain mountain;
+
+    @Column(name = "price", nullable = false, columnDefinition = "BIGINT CHECK(price > 0)")
+    private BigDecimal price;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
     @Column(name = "transaction_date", nullable = false)
     private Timestamp transactionDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private TransactionStatus status;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
+    @Column(name = "start_date", nullable = false)
+    private Timestamp startDate;
 
-    @OneToMany(mappedBy = "transaction")
-    @JsonManagedReference
-    private List<TransactionDetail> transactionDetails;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "Asia/Jakarta")
+    @Column(name = "end_date", nullable = false)
+    private Timestamp endDate;
+
+    @Column(name = "is_up", nullable = true)
+    private Boolean isUp;
+
+    @Column(name = "is_down", nullable = true)
+    private Boolean isDown;
+
+//    @Column(name = "qr_code_url", nullable = true)
+//    private Image qrCode;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id", unique = true, nullable = true)
+    private Payment payment;
 }

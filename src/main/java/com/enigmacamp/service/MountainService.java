@@ -3,6 +3,7 @@ package com.enigmacamp.service;
 import com.enigmacamp.model.dto.request.MountainRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.MountainResponse;
+import com.enigmacamp.model.entity.Mountain;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface MountainService {
     MountainResponse getById(String id);
     MountainResponse update(MountainRequest request);
     MountainResponse delete(String id);
+
+    Mountain getByIdEntity(String id);
 }

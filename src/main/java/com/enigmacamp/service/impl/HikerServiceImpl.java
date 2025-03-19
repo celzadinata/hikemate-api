@@ -33,4 +33,9 @@ public class HikerServiceImpl implements HikerService {
 
         return hikerMapper.entityToResponse(hikerRepository.save(newHiker));
     }
+
+    @Override
+    public Hiker getByIdEntity(String id) {
+        return hikerRepository.findById(id).orElseThrow(() -> new RuntimeException("Hiker not found"));
+    }
 }

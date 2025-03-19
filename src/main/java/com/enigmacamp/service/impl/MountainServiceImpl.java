@@ -104,6 +104,11 @@ public class MountainServiceImpl implements MountainService {
         return mountainMapper.entityToResponse(mountain);
     }
 
+    @Override
+    public Mountain getByIdEntity(String id) {
+        return findByIdOrThrowNotFound(id);
+    }
+
     private Mountain findByIdOrThrowNotFound(String id){
         return mountainRepository.findById(id).orElseThrow(() -> new RuntimeException("Mountain not found!", new RuntimeException("Mountain not found!", new Throwable())));
     }
