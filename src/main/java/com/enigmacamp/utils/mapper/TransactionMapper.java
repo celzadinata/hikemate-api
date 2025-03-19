@@ -42,7 +42,7 @@ public class TransactionMapper implements EntityMapper<Transaction, TransactionR
 
     @Override
     public TransactionRequest responseToRequest(TransactionResponse response) {
-        return null;
+        return null; // Test
     }
 
     @Override
