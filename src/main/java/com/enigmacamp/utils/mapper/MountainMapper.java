@@ -42,4 +42,9 @@ public class MountainMapper implements EntityMapper<Mountain, MountainRequest, M
                 .price(request.getPrice())
                 .build();
     }
+
+    @Override
+    public Mountain responseToEntity(MountainResponse response) {
+        return null;
+    }
 }

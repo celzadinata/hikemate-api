@@ -4,10 +4,15 @@ import com.enigmacamp.model.dto.request.HikerRequest;
 import com.enigmacamp.model.dto.response.HikerResponse;
 import com.enigmacamp.model.entity.Hiker;
 import com.enigmacamp.utils.EntityMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class HikerMapper implements EntityMapper<Hiker, HikerRequest, HikerResponse> {
+    @Autowired
+    private ImageMapper imageMapper;
+
+
     @Override
     public HikerResponse entityToResponse(Hiker entity) {
         return HikerResponse.builder()
@@ -15,6 +20,7 @@ public class HikerMapper implements EntityMapper<Hiker, HikerRequest, HikerRespo
                 .name(entity.getName())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())
+                .ktp(imageMapper.entityToResponse(entity.getKtp()))
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .deletedAt(entity.getDeletedAt())
@@ -32,6 +38,16 @@ public class HikerMapper implements EntityMapper<Hiker, HikerRequest, HikerRespo
                 .name(request.getName())
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
+                .build();
+    }
+
+    @Override
+    public Hiker responseToEntity(HikerResponse response) {
+        return Hiker.builder()
+                .name(response.getName())
+                .email(response.getEmail())
+                .phoneNumber(response.getPhoneNumber())
+                .ktp(imageMapper.responseToEntity(response.getKtp()))
                 .build();
     }
 }

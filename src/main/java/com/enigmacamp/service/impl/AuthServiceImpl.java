@@ -1,15 +1,21 @@
 package com.enigmacamp.service.impl;
 
+import com.enigmacamp.constant.Tables;
 import com.enigmacamp.constant.enums.UserRole;
 import com.enigmacamp.model.dto.request.AuthRequest;
 import com.enigmacamp.model.dto.request.HikerRequest;
 import com.enigmacamp.model.dto.request.NewUserRequest;
 import com.enigmacamp.model.dto.request.RangerRequest;
+import com.enigmacamp.model.dto.response.HikerResponse;
 import com.enigmacamp.model.dto.response.LoginResponse;
 import com.enigmacamp.model.dto.response.RegisterResponse;
+import com.enigmacamp.model.entity.Hiker;
+import com.enigmacamp.model.entity.Image;
 import com.enigmacamp.model.entity.Role;
 import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.service.*;
+import com.enigmacamp.utils.mapper.HikerMapper;
+import com.enigmacamp.utils.mapper.ImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,6 +52,16 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private HikerMapper hikerMapper;
+
+    @Autowired
+    private ImageMapper imageMapper;
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerHiker(NewUserRequest request) {
         String password = passwordEncoder.encode(request.getPassword());
@@ -62,6 +79,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerRanger(NewUserRequest request) {
         String password = passwordEncoder.encode(request.getPassword());
@@ -112,6 +130,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(request.getName())
                 .email(request.getEmail())
                 .phoneNumber(request.getPhone())
+                .ktpImage(request.getImage())
                 .userAccount(account)
                 .build();
     }

@@ -1,11 +1,14 @@
 package com.enigmacamp.service.impl;
 
+import com.enigmacamp.constant.Tables;
 import com.enigmacamp.model.dto.request.HikerRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.HikerResponse;
 import com.enigmacamp.model.entity.Hiker;
+import com.enigmacamp.model.entity.Image;
 import com.enigmacamp.repository.HikerRepository;
 import com.enigmacamp.service.HikerService;
+import com.enigmacamp.service.ImageService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.HikerMapper;
 import com.enigmacamp.utils.mapper.SortingUtil;
@@ -29,12 +32,19 @@ public class HikerServiceImpl implements HikerService {
     @Autowired
     private HikerMapper hikerMapper;
 
+    @Autowired
+    private ImageService imageService;
+
     @Override
     public HikerResponse create(HikerRequest request) {
         Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Hiker newHiker = hikerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newHiker.setUserAccount(request.getUserAccount());
+        }
+        if (request.getKtpImage() != null){
+            Image ktp = imageService.create(request.getKtpImage(), Tables.HIKER);
+            newHiker.setKtp(ktp);
         }
         newHiker.setCreatedAt(currentTimeStamp);
         newHiker.setUpdatedAt(currentTimeStamp);

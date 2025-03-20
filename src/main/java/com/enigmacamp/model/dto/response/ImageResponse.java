@@ -5,19 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HikerResponse {
+public class ImageResponse {
     private String id;
     private String name;
-    private String email;
-    private String phoneNumber;
-    private ImageResponse ktp;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
-    private Timestamp deletedAt;
+    private String path;
+    private Long size;
+    private String contentType;
 }

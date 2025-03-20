@@ -32,6 +32,10 @@ public class Hiker extends DateUtils {
     private String phoneNumber;
 
     @OneToOne
+    @JoinColumn(name = "ktp", nullable = true, unique = true)
+    private Image ktp;
+
+    @OneToOne
     @JoinColumn(name = "user_account_id", unique = true, nullable = true)
     private UserAccount userAccount;
 }

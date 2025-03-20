@@ -37,4 +37,9 @@ public class RangerMapper implements EntityMapper<Ranger, RangerRequest, RangerR
                 .phoneNumber(request.getPhoneNumber())
                 .build();
     }
+
+    @Override
+    public Ranger responseToEntity(RangerResponse response) {
+        return null;
+    }
 }
