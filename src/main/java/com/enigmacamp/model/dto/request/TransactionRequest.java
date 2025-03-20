@@ -28,4 +28,7 @@ public class TransactionRequest {
 
     @JsonAlias("end_date")
     private String endDate;
+
+    @JsonAlias("route_id")
+    private String routeId;
 }

@@ -19,6 +19,13 @@ public class MountainRequest {
     private String location;
     private String status;
     private BigDecimal price;
+    private String description;
+    private Boolean toilet;
+    private String water;
+    private Integer quotaLimit;
+
+    @JsonAlias("is_open")
+    private Boolean isOpen;
 
     @JsonAlias("assigned_ranger")
     private NewUserRequest assignedRanger;

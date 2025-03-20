@@ -32,6 +32,7 @@ public class TransactionMapper implements EntityMapper<Transaction, TransactionR
                 .isUp(entity.getIsUp())
                 .isDown(entity.getIsDown())
 //                .qrCodeUrl(entity.getQrCode().getPath())
+                .route(entity.getRoute().getRoute())
                 .hiker(hikerMapper.entityToResponse(entity.getHiker()))
                 .mountain(mountainMapper.entityToResponse(entity.getMountain()))
                 .ranger(rangerMapper.entityToResponse(entity.getRanger()))

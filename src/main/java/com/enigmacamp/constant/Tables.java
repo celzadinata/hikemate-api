@@ -9,4 +9,5 @@ public class Tables {
     public static final String ROLES = "roles";
     public static final String IMAGES = "images";
     public static final String PAYMENTS = "payments";
+    public static final String ROUTES = "routes";
 }

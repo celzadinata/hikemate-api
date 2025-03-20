@@ -40,6 +40,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     private PaymentService paymentService;
 
+    @Autowired
+    private RouteService routeService;
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public TransactionResponse create(TransactionRequest request) {
@@ -47,6 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
         Mountain mountain = mountainService.getByIdEntity(request.getMountainId());
         Ranger ranger = rangerService.getByIdEntity(request.getRangerId());
         Hiker hiker = hikerService.getByIdEntity(request.getHikerId());
+        Route route = routeService.getByIdEntity(request.getRouteId());
         Transaction newTransaction = transactionMapper.requestToEntity(request);
         newTransaction.setMountain(mountain);
         newTransaction.setRanger(ranger);
@@ -55,6 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setCreatedAt(currentTimeStamp);
         newTransaction.setUpdatedAt(currentTimeStamp);
         newTransaction.setPrice(mountain.getPrice());
+        newTransaction.setRoute(route);
 
         transactionRepository.save(newTransaction);
         Payment payment = paymentService.createPayment(newTransaction);

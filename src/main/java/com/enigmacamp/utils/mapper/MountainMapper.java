@@ -18,6 +18,11 @@ public class MountainMapper implements EntityMapper<Mountain, MountainRequest, M
                 .location(entity.getLocation())
                 .status(entity.getStatus().toString())
                 .price(entity.getPrice())
+                .description(entity.getDescription())
+                .water(entity.getWater())
+                .quotaLimit(entity.getQuotaLimit())
+                .toilet(entity.getToilet())
+                .isOpen(entity.getIsOpen())
                 .mountainCoverUrl(entity.getImage() != null? entity.getImage().getPath() : null)
                 .baseCampImagesUrl(entity.getBaseCampImages() != null ? entity.getBaseCampImages().stream().map(Image::getPath).toList() : null)
                 .createdAt(entity.getCreatedAt())
@@ -43,6 +48,11 @@ public class MountainMapper implements EntityMapper<Mountain, MountainRequest, M
                 .location(request.getLocation())
                 .status(MountainStatus.valueOf(request.getStatus()))
                 .price(request.getPrice())
+                .description(request.getDescription())
+                .water(request.getWater())
+                .quotaLimit(request.getQuotaLimit())
+                .toilet(request.getToilet())
+                .isOpen(request.getIsOpen())
                 .build();
     }
 }

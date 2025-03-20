@@ -37,6 +37,21 @@ public class Mountain extends DateUtils {
     @Column(name = "price", columnDefinition = "BIGINT CHECK(price > 0)", nullable = false)
     private BigDecimal price;
 
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "toilet", nullable = false)
+    private Boolean toilet;
+
+    @Column(name = "water", nullable = false)
+    private String water;
+
+    @Column(name = "quota_limit", nullable = false)
+    private Integer quotaLimit;
+
+    @Column(name = "is_open", nullable = false)
+    private Boolean isOpen;
+
     @OneToOne
     @JoinColumn(name = "image_id", nullable = true, unique = true)
     private Image image;

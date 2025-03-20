@@ -1,5 +1,6 @@
 package com.enigmacamp.model.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,11 @@ public class MountainResponse {
     private String location;
     private String status;
     private BigDecimal price;
+    private String description;
+    private Boolean toilet;
+    private String water;
+    private Integer quotaLimit;
+    private Boolean isOpen;
     private String mountainCoverUrl;
     private List<String> baseCampImagesUrl;
     @JsonInclude(JsonInclude.Include.NON_NULL)
