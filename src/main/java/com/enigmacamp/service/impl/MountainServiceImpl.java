@@ -60,7 +60,7 @@ public class MountainServiceImpl implements MountainService {
 
         if (request.getImage() != null) {
             Image image = imageService.create(request.getImage(), Tables.MOUNTAINS);
-            newMountain.setImage(image);
+            newMountain.setMountainImage(image);
         }
         Mountain mountain = mountainRepository.save(newMountain);
 

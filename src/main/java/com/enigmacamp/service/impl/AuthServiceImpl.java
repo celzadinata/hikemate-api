@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -89,12 +90,23 @@ public class AuthServiceImpl implements AuthService {
         Authentication authenticate = authenticationManager.authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(authenticate);
 
+
         UserAccount userAccount = (UserAccount) authenticate.getPrincipal();
+        String role = userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList().get(0);
+        String userLoggedInId = "";
+
+        if (Objects.equals(role, "RANGER")) {
+            userLoggedInId =  rangerService.getByUserAccountEntity(userAccount).getId();
+        } else {
+            userLoggedInId = hikerService.getByUserAccountEntity(userAccount).getId();
+        }
+
         String token = jwtService.generateToken(userAccount);
         return LoginResponse.builder()
                 .userAccountId(userAccount.getId())
                 .name(userAccount.getUsername())
                 .token(token)
+                .userLoggedInId(userLoggedInId)
                 .role(userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .build();
     }
