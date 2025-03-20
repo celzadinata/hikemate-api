@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,4 +23,5 @@ public class MountainRequest {
     @JsonAlias("assigned_ranger")
     private NewUserRequest assignedRanger;
     private MultipartFile image;
+    private List<MultipartFile> baseCampImages;
 }

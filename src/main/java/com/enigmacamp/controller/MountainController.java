@@ -32,11 +32,14 @@ public class MountainController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addMountain(
             @RequestPart(name = "mountain") String request,
-            @RequestPart(name = "image", required = false) MultipartFile image){
+            @RequestPart(name = "image", required = false) MultipartFile image,
+            @RequestPart(name = "base_camp_image", required = false) List<MultipartFile> baseCampImages
+    ){
         try {
             MountainRequest mountainRequest = objectMapper.readValue(request, new TypeReference<>() {
             });
             mountainRequest.setImage(image);
+            mountainRequest.setBaseCampImages(baseCampImages);
             MountainResponse mountainResponse = mountainService.create(mountainRequest);
             CommonResponse<MountainResponse> response = CommonResponse.<MountainResponse>builder()
                     .status(HttpStatus.CREATED.value())

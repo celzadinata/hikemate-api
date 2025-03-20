@@ -3,6 +3,7 @@ package com.enigmacamp.utils.mapper;
 import com.enigmacamp.constant.enums.MountainStatus;
 import com.enigmacamp.model.dto.request.MountainRequest;
 import com.enigmacamp.model.dto.response.MountainResponse;
+import com.enigmacamp.model.entity.Image;
 import com.enigmacamp.model.entity.Mountain;
 import com.enigmacamp.utils.EntityMapper;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,8 @@ public class MountainMapper implements EntityMapper<Mountain, MountainRequest, M
                 .location(entity.getLocation())
                 .status(entity.getStatus().toString())
                 .price(entity.getPrice())
+                .mountainCoverUrl(entity.getImage() != null? entity.getImage().getPath() : null)
+                .baseCampImagesUrl(entity.getBaseCampImages() != null ? entity.getBaseCampImages().stream().map(Image::getPath).toList() : null)
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .deletedAt(entity.getDeletedAt())

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,7 +20,8 @@ public class MountainResponse {
     private String location;
     private String status;
     private BigDecimal price;
-    private String imageId;
+    private String mountainCoverUrl;
+    private List<String> baseCampImagesUrl;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private RangerResponse rangerResponse;
     private Timestamp createdAt;

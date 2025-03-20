@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
@@ -39,4 +40,7 @@ public class Mountain extends DateUtils {
     @OneToOne
     @JoinColumn(name = "image_id", nullable = true, unique = true)
     private Image image;
+
+    @OneToMany
+    private List<Image> baseCampImages;
 }

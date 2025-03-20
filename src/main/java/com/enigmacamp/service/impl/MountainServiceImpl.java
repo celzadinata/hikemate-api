@@ -24,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class MountainServiceImpl implements MountainService {
@@ -60,7 +62,17 @@ public class MountainServiceImpl implements MountainService {
 
         if (request.getImage() != null) {
             Image image = imageService.create(request.getImage(), Tables.MOUNTAINS);
-            newMountain.setMountainImage(image);
+            newMountain.setImage(image);
+        }
+
+        if (request.getBaseCampImages() != null) {
+            List<Image> baseCampImages = new ArrayList<>();
+            request.getBaseCampImages().forEach(item -> {
+                Image image = imageService.create(item, Tables.MOUNTAINS);
+                baseCampImages.add(image);
+            });
+            newMountain.setBaseCampImages(baseCampImages);
+            System.out.println(newMountain.getBaseCampImages());
         }
         Mountain mountain = mountainRepository.save(newMountain);
 
