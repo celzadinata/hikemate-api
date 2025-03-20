@@ -1,5 +1,6 @@
 package com.enigmacamp.model.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class MountainResponse {
     private String status;
     private BigDecimal price;
     private String imageId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private RangerResponse rangerResponse;
     private Timestamp createdAt;
     private Timestamp updatedAt;

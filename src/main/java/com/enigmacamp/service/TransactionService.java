@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 
 public interface TransactionService {
     TransactionResponse create(TransactionRequest request);
-    Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, SearchRequest searchRequest);
+    Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, String rangerId, String hikerId, String mountainId, SearchRequest searchRequest);
     TransactionResponse getById(String id);
     TransactionResponse updateHikerStatus(String id);
 

@@ -128,7 +128,7 @@ public class RangerServiceImpl implements RangerService {
 
     private Ranger findByIdOrThrowNotFound(String id){
         return rangerRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("customer Not Found", new RuntimeException("customer ga ketemu"))
+                () -> new ResourceNotFoundException("Ranger Not Found", new RuntimeException("Ranger ga ketemu"))
         );
     }
 }

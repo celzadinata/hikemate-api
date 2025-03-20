@@ -4,6 +4,7 @@ import com.enigmacamp.constant.Tables;
 import com.enigmacamp.model.dto.request.MountainRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.MountainResponse;
+import com.enigmacamp.model.dto.response.RangerResponse;
 import com.enigmacamp.model.dto.response.RegisterResponse;
 import com.enigmacamp.model.entity.Image;
 import com.enigmacamp.model.entity.Mountain;
@@ -76,14 +77,18 @@ public class MountainServiceImpl implements MountainService {
     }
 
     @Override
-    public Page<MountainResponse> getAll(String name, String startPrice, String endPrice, String status, String rangerId, String location, SearchRequest searchRequest) {
-        Ranger ranger = rangerService.getByIdEntity(rangerId);
-        MountainSpecification specification = new MountainSpecification(name, startPrice, endPrice, status, ranger, location);
+    public Page<MountainResponse> getAll(String name, String startPrice, String endPrice, String status, String location, SearchRequest searchRequest) {
+        MountainSpecification specification = new MountainSpecification(name, startPrice, endPrice, status, location);
         Sort.Direction sortDirection = searchRequest.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sortDirection, searchRequest.getSortBy());
         Page<Mountain> mountainPage = mountainRepository.findAll(specification, pageable);
 
-        return mountainPage.map(mountainMapper::entityToResponse);
+        return mountainPage.map(item -> {
+            RangerResponse rangerResponse = rangerService.getByMountainId(item);
+            MountainResponse mountainResponse =  mountainMapper.entityToResponse(item);
+            mountainResponse.setRangerResponse(rangerResponse);
+            return mountainResponse;
+        });
     }
 
     @Override

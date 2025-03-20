@@ -106,7 +106,7 @@ public class HikerServiceImpl implements HikerService {
 
     private Hiker findByIdOrThrowNotFound(String id){
         return hikerRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("customer Not Found", new RuntimeException("customer ga ketemu"))
+                () -> new ResourceNotFoundException("Hiker Not Found", new RuntimeException("Hiker ga ketemu"))
         );
     }
 }
