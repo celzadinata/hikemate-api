@@ -58,12 +58,22 @@ public class DatabaseSeeder {
                 .role(UserRole.HIKER)
                 .build());
 
+        Role superAdminRole = roleRepository.save(Role.builder()
+                .role(UserRole.SUPERADMIN)
+                .build());
+
         Route jalurUtama = routeRepository.save(Route.builder()
                 .route("Jalur Utama")
                 .build());
 
         Route jalurAlternatif = routeRepository.save(Route.builder()
                 .route("Jalur Alternatif")
+                .build());
+
+        UserAccount superAdmin = userAccountRepository.save(UserAccount.builder()
+                .email("admin@enigmacamp.com")
+                .password(passwordEncoder.encode("admin123"))
+                .role(List.of(superAdminRole))
                 .build());
 
         UserAccount rangerUser1 = userAccountRepository.save(UserAccount.builder()

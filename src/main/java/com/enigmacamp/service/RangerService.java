@@ -20,4 +20,5 @@ public interface RangerService {
     Ranger getByIdEntity(String id);
     Ranger getByUserAccountEntity(UserAccount userAccount);
     RangerResponse getByMountainId(Mountain mountain);
+    Ranger getByMountainIdEntity(Mountain mountain);
 }

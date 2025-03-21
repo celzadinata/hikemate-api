@@ -7,7 +7,6 @@ import com.enigmacamp.model.entity.Mountain;
 import com.enigmacamp.model.entity.Ranger;
 import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.repository.RangerRepository;
-import com.enigmacamp.service.MountainService;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.RangerMapper;
@@ -22,8 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RangerServiceImpl implements RangerService {
@@ -124,6 +121,12 @@ public class RangerServiceImpl implements RangerService {
                 .orElseThrow(() -> new RuntimeException("No ranger found for this mountain!"));
 
         return rangerMapper.entityToResponse(ranger);
+    }
+
+    @Override
+    public Ranger getByMountainIdEntity(Mountain mountain) {
+        return rangerRepository.findByMountain(mountain)
+                .orElseThrow(() -> new RuntimeException("No ranger found for this mountain!"));
     }
 
     private Ranger findByIdOrThrowNotFound(String id){

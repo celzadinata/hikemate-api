@@ -120,6 +120,37 @@ public class MountainController {
                 .body(response);
     }
 
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMountain(
+            @RequestPart(name = "mountain") String request,
+            @RequestPart(name = "image", required = false) MultipartFile image,
+            @RequestPart(name = "base_camp_image", required = false) List<MultipartFile> baseCampImages
+    ){
+        try {
+            MountainRequest mountainRequest = objectMapper.readValue(request, new TypeReference<>() {
+            });
+            mountainRequest.setImage(image);
+            mountainRequest.setBaseCampImages(baseCampImages);
+            MountainResponse mountainResponse = mountainService.update(mountainRequest);
+            CommonResponse<MountainResponse> response = CommonResponse.<MountainResponse>builder()
+                    .status(HttpStatus.CREATED.value())
+                    .message("Mountain updated successfully!")
+                    .data(mountainResponse)
+                    .build();
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .header("Content-Type", "application/json")
+                    .body(response);
+        } catch (Exception e) {
+            System.out.println("error: {} " + e.getLocalizedMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("Terjadi kesalahan pada PatchMapping Mountain Controller: " +  e);
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<CommonResponse<String>> deleteMountainById(@PathVariable String id){
         mountainService.delete(id);

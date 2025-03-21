@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MountainRequest {
+    private String id;
     private String name;
     private String location;
     private String status;

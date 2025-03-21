@@ -17,4 +17,7 @@ public class NewUserRequest {
     private String phone;
     private String email;
     private String password;
+
+    @JsonAlias("user_id")
+    private String userId;
 }
