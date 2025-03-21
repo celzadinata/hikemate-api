@@ -106,8 +106,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<TransactionResponse> getTransactionByMonthAndYear(String month, String year) {
-        return null;
+    public Page<TransactionResponse> getTransactionByMonthAndYear(Integer month, Integer year, String mountainId, SearchRequest searchRequest) {
+        Sort.Direction sortDirection = searchRequest.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sortDirection, searchRequest.getSortBy());
+        return transactionRepository.getTransactionByMonthAndYearAndMountain(month, year, mountainId, pageable).map(transactionMapper::entityToResponse);
     }
 
     @Override

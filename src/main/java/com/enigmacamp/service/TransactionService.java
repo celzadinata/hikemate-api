@@ -11,7 +11,7 @@ public interface TransactionService {
     Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, String rangerId, String hikerId, String mountainId, SearchRequest searchRequest);
     TransactionResponse getById(String id);
     TransactionResponse updateHikerStatus(String id);
-    Page<TransactionResponse> getTransactionByMonthAndYear(String month, String year);
+    Page<TransactionResponse> getTransactionByMonthAndYear(Integer month, Integer year, String mountainId, SearchRequest searchRequest);
 
     Transaction getByIdEntity(String id);
 }

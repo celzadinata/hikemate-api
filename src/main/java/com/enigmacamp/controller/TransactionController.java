@@ -97,6 +97,44 @@ public class TransactionController {
                 .body(response);
     }
 
+    @GetMapping("/statistic/{month}/{year}/{mountainId}")
+    public ResponseEntity<?> getTransactionStatistic(
+            @PathVariable Integer month,
+            @PathVariable Integer year,
+            @PathVariable String mountainId,
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size
+    ){
+        SearchRequest searchRequest = SearchRequest.builder()
+                .size(size)
+                .page(Math.max(page - 1, 0))
+                .direction("asc")
+                .sortBy("id")
+                .build();
+
+        Page<TransactionResponse> transactionResponses = transactionService.getTransactionByMonthAndYear(month, year, mountainId, searchRequest);
+
+        PagingResponse pagingResponse = PagingResponse.builder()
+                .totalPages(transactionResponses.getTotalPages())
+                .totalElements(transactionResponses.getTotalElements())
+                .page(page)
+                .size(size)
+                .hasNext(transactionResponses.hasNext())
+                .hasPrevious(transactionResponses.hasPrevious())
+                .build();
+
+        CommonResponse<List<TransactionResponse>> response = CommonResponse.<List<TransactionResponse>>builder()
+                .status(HttpStatus.OK.value())
+                .message("Success fetching transaction statistic")
+                .data(transactionResponses.getContent())
+                .paging(pagingResponse)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("Content Type", "application/json")
+                .body(response);
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<CommonResponse<TransactionResponse>> updateHikerStatus(@PathVariable String id){
         TransactionResponse transactionResponse = transactionService.updateHikerStatus(id);
