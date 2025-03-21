@@ -97,8 +97,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (Objects.equals(role, "RANGER")) {
             userLoggedInId =  rangerService.getByUserAccountEntity(userAccount).getId();
-        } else {
+        } else if (Objects.equals(role, "HIKER")) {
+
             userLoggedInId = hikerService.getByUserAccountEntity(userAccount).getId();
+        } else {
+            userLoggedInId = userService.loadUserById(userAccount.getId()).getId();
         }
 
         String token = jwtService.generateToken(userAccount);
