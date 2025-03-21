@@ -61,6 +61,10 @@ public class TransactionServiceImpl implements TransactionService {
         newTransaction.setPrice(mountain.getPrice());
         newTransaction.setRoute(route);
 
+        if (checkIfMountainQuotaFull(request, mountain)) {
+            throw new RuntimeException("Mountain limit on that day already reach maximum capacity");
+        }
+
         transactionRepository.save(newTransaction);
         Payment payment = paymentService.createPayment(newTransaction);
         newTransaction.setPayment(payment);
@@ -93,14 +97,17 @@ public class TransactionServiceImpl implements TransactionService {
         if (!transactionFound.getIsUp() && !transactionFound.getIsDown()) {
             transactionFound.setIsUp(true);
             transactionFound.setUpdatedAt(currentTimeStamp);
-        }
-
-        if (transactionFound.getIsUp() && !transactionFound.getIsDown()) {
+        }else if (transactionFound.getIsUp() && !transactionFound.getIsDown()) {
             transactionFound.setIsDown(true);
             transactionFound.setUpdatedAt(currentTimeStamp);
         }
 
         return transactionMapper.entityToResponse(transactionRepository.saveAndFlush(transactionFound));
+    }
+
+    @Override
+    public Page<TransactionResponse> getTransactionByMonthAndYear(String month, String year) {
+        return null;
     }
 
     @Override
@@ -112,21 +119,34 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found!", new RuntimeException("Transaction not found!", new Throwable())));
     }
 
-    Ranger findRangerById(String rangerId){
+    private Boolean checkIfMountainQuotaFull(TransactionRequest request, Mountain mountain){
+        String startDate = request.getStartDate().substring(0, 10);
+        System.out.println(startDate);
+
+        Integer startDateCount = transactionRepository.countTotalTransactionByStartDateAndIsUp(startDate, mountain.getId());
+        Integer endDateCount = transactionRepository.countTotalTransactionByEndDateAndIsUp(startDate, mountain.getId());
+        System.out.println("Start date count: " + startDateCount);
+        System.out.println("End date count: " + endDateCount);
+        System.out.println("Mountain quota: " + mountain.getQuotaLimit());
+
+        return startDateCount + endDateCount >= mountain.getQuotaLimit();
+    }
+
+    private Ranger findRangerById(String rangerId){
         if (rangerId != null && !rangerId.isEmpty()) {
             return rangerService.getByIdEntity(rangerId);
         } else {
             return null;
         }
     }
-    Hiker findHikerById(String hikerId){
+    private Hiker findHikerById(String hikerId){
         if (hikerId != null && !hikerId.isEmpty()) {
             return hikerService.getByIdEntity(hikerId);
         } else {
             return null;
         }
     }
-    Mountain findMountainById(String mountainId){
+    private Mountain findMountainById(String mountainId){
         if (mountainId != null && !mountainId.isEmpty()) {
             return mountainService.getByIdEntity(mountainId);
         } else {

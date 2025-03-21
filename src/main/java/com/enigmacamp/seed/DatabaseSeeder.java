@@ -180,7 +180,7 @@ public class DatabaseSeeder {
                 .image(mountainImage1)
                 .description("Mount Everest attracts many climbers, including highly experienced mountaineers. There are two main climbing routes, one approaching the summit from the southeast in Nepal (known as the standard route) and the other from the north in Tibet. While not posing substantial technical climbing challenges on the standard route, Everest presents dangers such as altitude sickness, weather, and wind, as well as hazards from avalanches and the Khumbu Icefall. As of May 2024, 340 people have died on Everest. Over 200 bodies remain on the mountain, having been abandoned because of the dangerous conditions.[7][8]")
                 .water("Hanya ada di beberapa tempat")
-                .quotaLimit(130)
+                .quotaLimit(3)
                 .toilet(true)
                 .isOpen(true)
                 .baseCampImages(List.of(baseCampImage1, baseCampImage2))
@@ -247,8 +247,8 @@ public class DatabaseSeeder {
                 .hikerId(hiker3.getId())
                 .rangerId(ranger1.getId())
                 .mountainId(mountain1.getId())
-                .startDate("2025-06-01 14:26:02.028")
-                .endDate("2025-06-03 14:26:02.028")
+                .startDate("2025-04-17 14:26:02.028")
+                .endDate("2025-04-19 14:26:02.028")
                 .routeId(jalurUtama.getId())
                 .build();
 
@@ -262,7 +262,7 @@ public class DatabaseSeeder {
                 .build();
 
 
-        transactionService.create(transactionRequest1);
+        transactionService.create(transactionRequest1).setIsUp(true);
         transactionService.create(transactionRequest2);
         transactionService.create(transactionRequest3);
         transactionService.create(transactionRequest4);
