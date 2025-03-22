@@ -32,11 +32,14 @@ public class MountainController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addMountain(
             @RequestPart(name = "mountain") String request,
-            @RequestPart(name = "image", required = false) MultipartFile image){
+            @RequestPart(name = "image", required = false) MultipartFile image,
+            @RequestPart(name = "base_camp_image", required = false) List<MultipartFile> baseCampImages
+    ){
         try {
             MountainRequest mountainRequest = objectMapper.readValue(request, new TypeReference<>() {
             });
             mountainRequest.setImage(image);
+            mountainRequest.setBaseCampImages(baseCampImages);
             MountainResponse mountainResponse = mountainService.create(mountainRequest);
             CommonResponse<MountainResponse> response = CommonResponse.<MountainResponse>builder()
                     .status(HttpStatus.CREATED.value())
@@ -79,7 +82,7 @@ public class MountainController {
                 .query(name)
                 .build();
 
-        Page<MountainResponse> mountainResponses = mountainService.getAll(name, startPrice, endPrice, status,location, searchRequest);
+        Page<MountainResponse> mountainResponses = mountainService.getAll(name, startPrice, endPrice, status, location, searchRequest);
 
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(mountainResponses.getTotalPages())
@@ -115,6 +118,37 @@ public class MountainController {
                 .status(HttpStatus.OK)
                 .header("Content-Type", "application/json")
                 .body(response);
+    }
+
+    @PatchMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMountain(
+            @RequestPart(name = "mountain") String request,
+            @RequestPart(name = "image", required = false) MultipartFile image,
+            @RequestPart(name = "base_camp_image", required = false) List<MultipartFile> baseCampImages
+    ){
+        try {
+            MountainRequest mountainRequest = objectMapper.readValue(request, new TypeReference<>() {
+            });
+            mountainRequest.setImage(image);
+            mountainRequest.setBaseCampImages(baseCampImages);
+            MountainResponse mountainResponse = mountainService.update(mountainRequest);
+            CommonResponse<MountainResponse> response = CommonResponse.<MountainResponse>builder()
+                    .status(HttpStatus.CREATED.value())
+                    .message("Mountain updated successfully!")
+                    .data(mountainResponse)
+                    .build();
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .header("Content-Type", "application/json")
+                    .body(response);
+        } catch (Exception e) {
+            System.out.println("error: {} " + e.getLocalizedMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("Terjadi kesalahan pada PatchMapping Mountain Controller: " +  e);
+        }
     }
 
     @DeleteMapping("/{id}")

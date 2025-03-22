@@ -8,18 +8,28 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MountainRequest {
+    private String id;
     private String name;
     private String location;
     private String status;
     private BigDecimal price;
+    private String description;
+    private Boolean toilet;
+    private String water;
+    private Integer quotaLimit;
+
+    @JsonAlias("is_open")
+    private Boolean isOpen;
 
     @JsonAlias("assigned_ranger")
     private NewUserRequest assignedRanger;
     private MultipartFile image;
+    private List<MultipartFile> baseCampImages;
 }

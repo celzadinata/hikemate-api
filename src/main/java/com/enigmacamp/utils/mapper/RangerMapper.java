@@ -4,10 +4,14 @@ import com.enigmacamp.model.dto.request.RangerRequest;
 import com.enigmacamp.model.dto.response.RangerResponse;
 import com.enigmacamp.model.entity.Ranger;
 import com.enigmacamp.utils.EntityMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RangerMapper implements EntityMapper<Ranger, RangerRequest, RangerResponse> {
+
+    @Autowired
+    private MountainMapper mountainMapper;
 
     @Override
     public RangerResponse entityToResponse(Ranger entity) {
@@ -16,6 +20,7 @@ public class RangerMapper implements EntityMapper<Ranger, RangerRequest, RangerR
                 .name(entity.getName())
                 .assignedAt(entity.getAssignedAt())
                 .phoneNumber(entity.getPhoneNumber())
+                .mountainResponse(entity.getMountain() != null ? mountainMapper.entityToResponse(entity.getMountain()) : null)
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .deletedAt(entity.getDeletedAt())

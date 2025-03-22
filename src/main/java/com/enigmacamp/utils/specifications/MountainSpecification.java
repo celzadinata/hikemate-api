@@ -1,6 +1,7 @@
 package com.enigmacamp.utils.specifications;
 
 import com.enigmacamp.model.entity.Mountain;
+import com.enigmacamp.model.entity.Ranger;
 import com.enigmacamp.utils.UtilityTool;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
