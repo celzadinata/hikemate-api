@@ -1,4 +1,4 @@
-package com.enigmacamp.model.dto.request;
+package com.enigmacamp.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class RouteRequest {
+@NoArgsConstructor
+public class MountainRouteResponse {
     private String id;
+    private String mountainId;
+    private String routeId;
     private String routeName;
 }

@@ -16,7 +16,8 @@ public class HikerResponse {
     private String name;
     private String email;
     private String phoneNumber;
-    private ImageResponse ktp;
+    private String ktpUrl;
+    private String profilePictureUrl;
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Timestamp deletedAt;

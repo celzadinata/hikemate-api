@@ -6,10 +6,15 @@ import com.enigmacamp.model.dto.response.MountainResponse;
 import com.enigmacamp.model.entity.Image;
 import com.enigmacamp.model.entity.Mountain;
 import com.enigmacamp.utils.EntityMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MountainMapper implements EntityMapper<Mountain, MountainRequest, MountainResponse> {
+
+    @Autowired
+    private RouteMapper routeMapper;
+
     @Override
     public MountainResponse entityToResponse(Mountain entity) {
         return MountainResponse.builder()

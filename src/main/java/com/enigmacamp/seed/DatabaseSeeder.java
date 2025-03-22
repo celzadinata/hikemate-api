@@ -47,6 +47,9 @@ public class DatabaseSeeder {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private MountainRouteRepository mountainRouteRepository;
+
     @PostConstruct
     public void seed() {
 
@@ -225,6 +228,27 @@ public class DatabaseSeeder {
                 .phoneNumber("08126473823")
                 .assignedAt(new Timestamp(new Date().getTime()))
                 .build());
+
+        mountainRouteRepository.save(
+                MountainRoute.builder()
+                        .mountain(mountain1)
+                        .route(jalurUtama)
+                        .build()
+        );
+
+        mountainRouteRepository.save(
+                MountainRoute.builder()
+                        .mountain(mountain1)
+                        .route(jalurAlternatif)
+                        .build()
+        );
+
+        mountainRouteRepository.save(
+                MountainRoute.builder()
+                        .mountain(mountain2)
+                        .route(jalurUtama)
+                        .build()
+        );
 
         TransactionRequest transactionRequest1 = TransactionRequest.builder()
                 .hikerId(hiker1.getId())

@@ -43,10 +43,17 @@ public class HikerServiceImpl implements HikerService {
         if (request.getUserAccount() != null) {
             newHiker.setUserAccount(request.getUserAccount());
         }
+
         if (request.getKtpImage() != null){
             Image ktp = imageService.create(request.getKtpImage(), Tables.HIKER);
             newHiker.setKtp(ktp);
         }
+
+        if (request.getProfilePicture() != null){
+            Image profilePicture = imageService.create(request.getProfilePicture(), Tables.HIKER);
+            newHiker.setProfilePicture(profilePicture);
+        }
+
         newHiker.setCreatedAt(currentTimeStamp);
         newHiker.setUpdatedAt(currentTimeStamp);
 

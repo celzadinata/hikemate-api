@@ -20,6 +20,7 @@ public class NewUserRequest {
     private String email;
     private String password;
     private MultipartFile image;
+    private MultipartFile profilePicture;
     @JsonAlias("user_id")
     private String userId;
 }

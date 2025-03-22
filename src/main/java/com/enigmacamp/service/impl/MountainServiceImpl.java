@@ -3,24 +3,27 @@ package com.enigmacamp.service.impl;
 import com.enigmacamp.constant.Tables;
 import com.enigmacamp.constant.enums.MountainStatus;
 import com.enigmacamp.model.dto.request.MountainRequest;
+import com.enigmacamp.model.dto.request.MountainRouteRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.MountainResponse;
+import com.enigmacamp.model.dto.response.MountainRouteResponse;
 import com.enigmacamp.model.dto.response.RangerResponse;
 import com.enigmacamp.model.dto.response.RegisterResponse;
-import com.enigmacamp.model.entity.Image;
-import com.enigmacamp.model.entity.Mountain;
-import com.enigmacamp.model.entity.Ranger;
-import com.enigmacamp.model.entity.UserAccount;
+import com.enigmacamp.model.entity.*;
 import com.enigmacamp.repository.MountainRepository;
 import com.enigmacamp.service.*;
 import com.enigmacamp.utils.mapper.MountainMapper;
+import com.enigmacamp.utils.mapper.MountainRouteMapper;
 import com.enigmacamp.utils.mapper.RangerMapper;
 import com.enigmacamp.utils.specifications.MountainSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.enigmacamp.utils.validate_request.MountainValidation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -28,76 +31,47 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MountainServiceImpl implements MountainService {
+    private final MountainRepository mountainRepository;
+    private final MountainMapper mountainMapper;
+    private final RangerMapper rangerMapper;
+    private final MountainRouteMapper mountainRouteMapper;
+    private final AuthService authService;
+    private final RangerService rangerService;
+    private final ImageService imageService;
+    private final RouteService routeService;
+    private final UserService userService;
+    private final MountainRouteService mountainRouteService;
+    private final MountainValidation mountainValidation;
 
-    @Autowired
-    private MountainRepository mountainRepository;
-
-    @Autowired
-    private MountainMapper mountainMapper;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private RangerService rangerService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private RangerMapper rangerMapper;
+    private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public MountainResponse create(MountainRequest request) {;
-        Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+    public MountainResponse create(MountainRequest request) {
+        mountainValidation.validateCreateRequest(request);
         Mountain newMountain = mountainMapper.requestToEntity(request);
         newMountain.setCreatedAt(currentTimeStamp);
         newMountain.setUpdatedAt(currentTimeStamp);
-
-        if (request.getImage() != null) {
-            Image image = imageService.create(request.getImage(), Tables.MOUNTAINS);
-            newMountain.setImage(image);
-        }
-
-        if (request.getBaseCampImages() != null) {
-            List<Image> baseCampImages = new ArrayList<>();
-            request.getBaseCampImages().forEach(item -> {
-                Image image = imageService.create(item, Tables.MOUNTAINS + "/basecamp");
-                baseCampImages.add(image);
-            });
-            newMountain.setBaseCampImages(baseCampImages);
-            System.out.println(newMountain.getBaseCampImages());
-        }
-        Mountain mountain = mountainRepository.save(newMountain);
-
-        RegisterResponse newRangerAccount = authService.registerRanger(request.getAssignedRanger());
-
-        UserAccount userAccount = userService.loadUserById(newRangerAccount.getUserId());
-        Ranger ranger = rangerService.getByUserAccountEntity(userAccount);
-        ranger.setMountain(mountain);
-
-        MountainResponse mountainResponse = mountainMapper.entityToResponse(mountain);
-        mountainResponse.setRangerResponse(rangerMapper.entityToResponse(ranger));
-
-        return mountainResponse;
+        handleImages(request, newMountain);
+        return createMountainResponse(request, newMountain);
     }
 
     @Override
     public Page<MountainResponse> getAll(String name, String startPrice, String endPrice, String status, String location, SearchRequest searchRequest) {
         MountainSpecification specification = new MountainSpecification(name, startPrice, endPrice, status, location);
-        Sort.Direction sortDirection = searchRequest.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sortDirection, searchRequest.getSortBy());
-        Page<Mountain> mountainPage = mountainRepository.findAll(specification, pageable);
-
-        return mountainPage.map(item -> {
+        Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), Sort.Direction.fromString(searchRequest.getDirection()), searchRequest.getSortBy());
+        return mountainRepository.findAll(specification, pageable).map(item -> {
             RangerResponse rangerResponse = rangerService.getByMountainId(item);
-            MountainResponse mountainResponse =  mountainMapper.entityToResponse(item);
+            List<MountainRouteResponse> mountainRouteResponseList = mountainRouteService.getAllByMountain(item)
+                    .stream()
+                    .map(mountainRouteMapper::entityToResponse)
+                    .toList();
+            MountainResponse mountainResponse = mountainMapper.entityToResponse(item);
             mountainResponse.setRangerResponse(rangerResponse);
+            mountainResponse.setMountainRoutes(mountainRouteResponseList);
+            System.out.println(mountainResponse);
             return mountainResponse;
         });
     }
@@ -105,15 +79,68 @@ public class MountainServiceImpl implements MountainService {
     @Override
     public MountainResponse getById(String id) {
         Mountain mountain = findByIdOrThrowNotFound(id);
-        return mountainMapper.entityToResponse(mountain);
+        List<MountainRouteResponse> mountainRouteResponseList = mountainRouteService.getAllByMountain(mountain)
+                .stream()
+                .map(mountainRouteMapper::entityToResponse)
+                .toList();
+        MountainResponse mountainResponse = mountainMapper.entityToResponse(mountain);
+        mountainResponse.setMountainRoutes(mountainRouteResponseList);
+        return mountainResponse;
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public MountainResponse update(MountainRequest request) {
+        mountainValidation.validateUpdateRequest(request);
         Mountain mountain = findByIdOrThrowNotFound(request.getId());
-        Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+        updateMountainFields(request, mountain);
+        handleImages(request, mountain);
+        mountainRepository.saveAndFlush(mountain);
+        return mountainMapper.entityToResponse(mountain);
+    }
 
+    @Override
+    public MountainResponse delete(String id) {
+        Mountain mountain = findByIdOrThrowNotFound(id);
+        mountain.setDeletedAt(currentTimeStamp);
+        mountainRepository.saveAndFlush(mountain);
+        return mountainMapper.entityToResponse(mountain);
+    }
+
+    @Override
+    public Mountain getByIdEntity(String id) {
+        return findByIdOrThrowNotFound(id);
+    }
+
+    private Mountain findByIdOrThrowNotFound(String id) {
+        return mountainRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mountain with id: " + id + " is not found!"));
+    }
+
+    private void handleImages(MountainRequest request, Mountain mountain) {
+        if (request.getImage() != null) {
+            if (mountain.getImage() != null) {
+                imageService.removeImageFromCloudinary(mountain.getImage().getPath());
+                imageService.deleteById(mountain.getImage().getId());
+            }
+            mountain.setImage(imageService.create(request.getImage(), Tables.MOUNTAINS));
+        }
+
+        if (request.getBaseCampImages() != null) {
+            mountain.getBaseCampImages().forEach(image -> {
+                imageService.removeImageFromCloudinary(image.getPath());
+                imageService.deleteById(image.getId());
+            });
+            mountain.setBaseCampImages(createImageList(request.getBaseCampImages()));
+        }
+    }
+
+    private List<Image> createImageList(List<MultipartFile> baseCampImages) {
+        List<Image> images = new ArrayList<>();
+        baseCampImages.forEach(item -> images.add(imageService.create(item, Tables.MOUNTAINS + "/basecamp")));
+        return images;
+    }
+
+    private void updateMountainFields(MountainRequest request, Mountain mountain) {
         mountain.setName(request.getName());
         mountain.setLocation(request.getLocation());
         mountain.setStatus(MountainStatus.valueOf(request.getStatus()));
@@ -131,54 +158,46 @@ public class MountainServiceImpl implements MountainService {
             Ranger newRanger = rangerService.getByIdEntity(request.getAssignedRanger().getUserId());
             newRanger.setMountain(mountain);
         }
+    }
 
-        if (request.getImage() != null && !request.getImage().isEmpty()) {
-            if (mountain.getImage() != null) {
-                imageService.removeImageFromCloudinary(mountain.getImage().getPath());
-                imageService.deleteById(mountain.getImage().getId());
-            }
+    private MountainResponse createMountainResponse(MountainRequest request, Mountain newMountain) {
+        Mountain mountain = mountainRepository.save(newMountain);
+        RegisterResponse newRangerAccount = authService.registerRanger(request.getAssignedRanger());
+        Ranger ranger = rangerService.getByUserAccountEntity(userService.loadUserById(newRangerAccount.getUserId()));
+        ranger.setMountain(mountain);
 
-            Image newImage = imageService.create(request.getImage(), Tables.MOUNTAINS);
-            mountain.setImage(newImage);
+        MountainResponse mountainResponse = mountainMapper.entityToResponse(mountain);
+        mountainResponse.setRangerResponse(rangerMapper.entityToResponse(ranger));
+        if (request.getMountainRoutes() != null) {
+            List<MountainRoute> mountainRouteList = getMountainRoutes(request, newMountain);
+            mountainResponse.setMountainRoutes(mapMountainRoutesToResponses(mountainRouteList));
         }
-
-        if (request.getBaseCampImages() != null && !request.getBaseCampImages().isEmpty()) {
-            List<Image> imagesToDelete = new ArrayList<>();
-            for (Image baseCampImage : mountain.getBaseCampImages()) {
-                Image image = imageService.getImage(baseCampImage.getId());
-                imagesToDelete.add(image);
-                imageService.removeImageFromCloudinary(image.getPath());
-                imageService.deleteById(image.getId());
-            }
-            mountain.getBaseCampImages().removeAll(imagesToDelete);
-
-            List<Image> newImages = new ArrayList<>();
-            for (MultipartFile baseCampImage : request.getBaseCampImages()) {
-                Image newImage = imageService.create(baseCampImage, Tables.MOUNTAINS + "/basecamp");
-                newImages.add(newImage);
-            }
-            mountain.getBaseCampImages().addAll(newImages);
-        }
-
-        mountainRepository.saveAndFlush(mountain);
-
-        return mountainMapper.entityToResponse(mountain);
+        return mountainResponse;
     }
 
-    @Override
-    public MountainResponse delete(String id) {
-        Mountain mountain = findByIdOrThrowNotFound(id);
-        mountain.setDeletedAt(new Timestamp(new Date().getTime()));
-        mountainRepository.saveAndFlush(mountain);
-        return mountainMapper.entityToResponse(mountain);
+    private List<MountainRoute> getMountainRoutes(MountainRequest request, Mountain newMountain) {
+        List<Route> routes = getRouteList(request);
+        return createMountainRoutes(newMountain, routes);
     }
 
-    @Override
-    public Mountain getByIdEntity(String id) {
-        return findByIdOrThrowNotFound(id);
+    private List<Route> getRouteList(MountainRequest request) {
+        List<Route> routes = new ArrayList<>();
+        request.getMountainRoutes().forEach(item -> routes.add(routeService.getByIdEntity(item.getId())));
+        return routes;
     }
 
-    private Mountain findByIdOrThrowNotFound(String id){
-        return mountainRepository.findById(id).orElseThrow(() -> new RuntimeException("Mountain not found!", new RuntimeException("Mountain not found!", new Throwable())));
+    private List<MountainRoute> createMountainRoutes(Mountain newMountain, List<Route> routes) {
+        List<MountainRoute> mountainRouteList = new ArrayList<>();
+        routes.forEach(route -> {
+            MountainRoute mountainRoute = mountainRouteService.create(MountainRouteRequest.builder().build());
+            mountainRoute.setMountain(newMountain);
+            mountainRoute.setRoute(route);
+            mountainRouteList.add(mountainRoute);
+        });
+        return mountainRouteList;
+    }
+
+    private List<MountainRouteResponse> mapMountainRoutesToResponses(List<MountainRoute> mountainRouteList) {
+        return mountainRouteList.stream().map(mountainRouteMapper::entityToResponse).toList();
     }
 }

@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RouteRequest {
-    private String id;
-    private String routeName;
+public class MountainRouteRequest {
+
+    private String mountainId;
+    private String routeId;
 }

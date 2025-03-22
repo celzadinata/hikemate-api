@@ -1,6 +1,7 @@
 package com.enigmacamp.model.dto.request;
 
 import com.enigmacamp.model.entity.UserAccount;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,4 +22,6 @@ public class HikerRequest {
     private UserAccount userAccount;
     @JsonIgnore
     private MultipartFile ktpImage;
+    @JsonIgnore
+    private MultipartFile profilePicture;
 }
