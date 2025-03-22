@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -36,9 +37,11 @@ public class HikerServiceImpl implements HikerService {
     @Autowired
     private ImageService imageService;
 
+    private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse create(HikerRequest request) {
-        Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Hiker newHiker = hikerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newHiker.setUserAccount(request.getUserAccount());
@@ -87,23 +90,38 @@ public class HikerServiceImpl implements HikerService {
         return hikerMapper.entityToResponse(hiker);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse updateHiker(HikerRequest request) {
-        Hiker existingHiker = findByIdOrThrowNotFound(request.getUserAccount().getId());
-        Hiker updateHiker = Hiker.builder()
-                .id(existingHiker.getId())
-                .name(request.getName() != null ? request.getName() : existingHiker.getName())
-                .phoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : existingHiker.getPhoneNumber())
-                .userAccount(existingHiker.getUserAccount())
-                .build();
-        return hikerMapper.entityToResponse(hikerRepository.save(updateHiker));
+        Hiker existingHiker = findByIdOrThrowNotFound(request.getId());
+        updateHikerFields(request, existingHiker);
+        if (request.getKtpImage() != null) {
+            String oldKtpUrl = existingHiker.getKtp().getPath();
+            String oldKtpId = existingHiker.getKtp().getId();
+            Image ktp = imageService.create(request.getKtpImage(), Tables.HIKER);
+            existingHiker.setKtp(ktp);
+            imageService.removeImageFromCloudinary(oldKtpUrl);
+            imageService.deleteById(oldKtpId);
+        }
+
+        if (request.getProfilePicture() != null) {
+            String oldProfilePictureUrl = existingHiker.getProfilePicture().getPath();
+            String oldProfilePictureId = existingHiker.getProfilePicture().getId();
+            Image profilePicture = imageService.create(request.getProfilePicture(), Tables.HIKER);
+            existingHiker.setProfilePicture(profilePicture);
+            imageService.removeImageFromCloudinary(oldProfilePictureUrl);
+            imageService.deleteById(oldProfilePictureId);
+        }
+        hikerRepository.saveAndFlush(existingHiker);
+        return hikerMapper.entityToResponse(existingHiker);
     }
 
     @Override
-    public void delete(String id) {
-        Hiker hiker = hikerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Hiker not found", new RuntimeException("Hiker not found")));
-        hikerRepository.delete(hiker);
+    public HikerResponse delete(String id) {
+        Hiker hiker = findByIdOrThrowNotFound(id);
+        hiker.setDeletedAt(currentTimeStamp);
+        hikerRepository.saveAndFlush(hiker);
+        return hikerMapper.entityToResponse(hiker);
     }
 
     private Specification<Hiker> hitAllSpecification(String request, String fieldName) {
@@ -131,5 +149,15 @@ public class HikerServiceImpl implements HikerService {
         return hikerRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Hiker Not Found", new RuntimeException("Hiker ga ketemu"))
         );
+    }
+
+    private void updateHikerFields(HikerRequest request, Hiker hiker) {
+        hiker.setName(request.getName() != null ? request.getName() : hiker.getName());
+        hiker.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : hiker.getPhoneNumber());
+        hiker.setUpdatedAt(currentTimeStamp);
+
+        if (request.getUserAccount() != null) {
+            hiker.setUserAccount(request.getUserAccount());
+        }
     }
 }

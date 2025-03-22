@@ -31,9 +31,10 @@ public class RangerServiceImpl implements RangerService {
     @Autowired
     private RangerMapper rangerMapper;
 
+    private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+
     @Override
     public RangerResponse create(RangerRequest request) {
-        Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Ranger newRanger = rangerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newRanger.setUserAccount(request.getUserAccount());
@@ -88,10 +89,11 @@ public class RangerServiceImpl implements RangerService {
     }
 
     @Override
-    public void delete(String id) {
-        Ranger ranger = rangerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ranger not found", new RuntimeException("Ranger not found")));
-        rangerRepository.delete(ranger);
+    public RangerResponse delete(String id) {
+        Ranger ranger = findByIdOrThrowNotFound(id);
+        ranger.setDeletedAt(currentTimeStamp);
+        rangerRepository.saveAndFlush(ranger);
+        return rangerMapper.entityToResponse(ranger);
     }
 
     private Specification<Ranger> hitAllSpecification(String request, String fieldName) {

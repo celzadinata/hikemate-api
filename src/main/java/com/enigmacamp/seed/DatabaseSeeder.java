@@ -115,11 +115,69 @@ public class DatabaseSeeder {
                 .role(List.of(hikerRole))
                 .build());
 
+        Image profilePic1 = imageRepository.save(Image.builder()
+                .name("profile_john.jpg")
+                .path("https://www.elitesingles.com.au/wp-content/uploads/sites/77/2020/06/profileprotectionsnap-350x264.jpg")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image profilePic2 = imageRepository.save(Image.builder()
+                .name("profile_jane.jpg")
+                .path("https://sarahclaysocial.com/wp-content/uploads/2020/10/sarah-clay-3.jpg")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image profilePic3 = imageRepository.save(Image.builder()
+                .name("profile_budi.jpg")
+                .path("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU0zYcypyreQSHIWXlpNM2hnAi6gJlYkX3vA&s")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image profilePic4 = imageRepository.save(Image.builder()
+                .name("profile_frank.jpg")
+                .path("https://cdn.pixabay.com/photo/2022/09/08/15/16/cute-7441224_640.jpg")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image ktpPic1 = imageRepository.save(Image.builder()
+                .name("ktp_john.jpg")
+                .path("https://bimamedia-gurusiana.ap-south-1.linodeobjects.com/099fe6b0b444c23836c4a5d07346082b/2021/04/20/l-img20210420015823jpg20210420005933.jpeg")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image ktpPic2 = imageRepository.save(Image.builder()
+                .name("ktp_jane.jpg")
+                .path("https://umsu.ac.id/artikel/wp-content/uploads/2023/11/cara-mudah-cek-ktp-asli-atau-palsu-718x375.jpeg")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image ktpPic3 = imageRepository.save(Image.builder()
+                .name("ktp_budi.jpg")
+                .path("https://about.lovia.id/wp-content/uploads/2020/05/ktp-1024x660.jpg")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
+        Image ktpPic4 = imageRepository.save(Image.builder()
+                .name("ktp_frank.jpg")
+                .path("https://beritabadung.com/uploads/berita/Berita_231304100451_disdukcapil-badung-benarkan-wna-punya-ktp-biru-ini-penjelasannya.webp")
+                .size(1024L)
+                .contentType("image/jpeg")
+                .build());
+
         Hiker hiker1 = hikerRepository.save(Hiker.builder()
                 .name("John Doe")
                 .email("johndoe@example.com")
                 .phoneNumber("08123456789")
                 .userAccount(hikerUser1)
+                .profilePicture(profilePic1)
+                .ktp(ktpPic1)
                 .build());
 
         Hiker hiker2 = hikerRepository.save(Hiker.builder()
@@ -127,6 +185,8 @@ public class DatabaseSeeder {
                 .email("janesmith@example.com")
                 .phoneNumber("08123456788")
                 .userAccount(hikerUser2)
+                .profilePicture(profilePic2)
+                .ktp(ktpPic2)
                 .build());
 
         Hiker hiker3 = hikerRepository.save(Hiker.builder()
@@ -134,6 +194,8 @@ public class DatabaseSeeder {
                 .email("budi@example.com")
                 .phoneNumber("08789203123")
                 .userAccount(hikerUser3)
+                .profilePicture(profilePic3)
+                .ktp(ktpPic3)
                 .build());
 
         Hiker hiker4 = hikerRepository.save(Hiker.builder()
@@ -141,6 +203,8 @@ public class DatabaseSeeder {
                 .email("frank@example.com")
                 .phoneNumber("08589038232")
                 .userAccount(hikerUser4)
+                .profilePicture(profilePic4)
+                .ktp(ktpPic4)
                 .build());
 
         Image mountainImage1 = imageRepository.save(Image.builder()

@@ -9,11 +9,15 @@ import com.enigmacamp.model.dto.response.HikerResponse;
 import com.enigmacamp.model.dto.response.PagingResponse;
 import com.enigmacamp.service.HikerService;
 import com.enigmacamp.utils.mapper.PagingUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,6 +26,9 @@ import java.util.List;
 public class HikerController {
     @Autowired
     private HikerService hikerService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @PostMapping
     public ResponseEntity<CommonResponse<HikerResponse>> addHiker(
@@ -103,19 +110,27 @@ public class HikerController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping
     public ResponseEntity<CommonResponse<HikerResponse>> updateHiker(
-            @PathVariable String id,
-            @RequestBody HikerRequest request) {
-        request.setId(id);
-        HikerResponse updatedHiker = hikerService.updateHiker(request);
-        CommonResponse<HikerResponse> response = CommonResponse
-                .<HikerResponse>builder()
-                .status(HttpStatus.OK.value())
-                .message("Hiker updated successfully")
-                .data(updatedHiker)
-                .build();
-        return ResponseEntity.ok(response);
+            @RequestPart(name = "hiker") String request,
+            @RequestPart(name = "ktp", required = false) MultipartFile ktp,
+            @RequestPart(name = "profile_picture", required = false) MultipartFile profilePicture
+    ) {
+        try {
+            HikerRequest hikerRequest = objectMapper.readValue(request, new TypeReference<>() {});
+            hikerRequest.setKtpImage(ktp);
+            hikerRequest.setProfilePicture(profilePicture);
+            HikerResponse updatedHiker = hikerService.updateHiker(hikerRequest);
+            CommonResponse<HikerResponse> response = CommonResponse
+                    .<HikerResponse>builder()
+                    .status(HttpStatus.OK.value())
+                    .message("Hiker updated successfully")
+                    .data(updatedHiker)
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

@@ -110,11 +110,9 @@ public class RangerController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping
     public ResponseEntity<CommonResponse<RangerResponse>> updateRanger(
-            @PathVariable String id,
             @RequestBody RangerRequest request) {
-        request.setId(id);
         RangerResponse updatedRanger = rangerService.updateRanger(request);
         CommonResponse<RangerResponse> response = CommonResponse
                 .<RangerResponse>builder()
