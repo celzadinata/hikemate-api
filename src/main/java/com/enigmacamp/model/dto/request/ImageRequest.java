@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssignRangerRequest {
+public class ImageRequest {
+    private String id;
     private String name;
-    private String phoneNumber;
+    private String path;
+    private Long size;
+    private String contentType;
 }

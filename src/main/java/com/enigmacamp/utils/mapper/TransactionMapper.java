@@ -55,4 +55,9 @@ public class TransactionMapper implements EntityMapper<Transaction, TransactionR
                 .isDown(false)
                 .build();
     }
+
+    @Override
+    public Transaction responseToEntity(TransactionResponse response) {
+        return null;
+    }
 }

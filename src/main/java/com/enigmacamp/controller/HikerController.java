@@ -1,6 +1,7 @@
 package com.enigmacamp.controller;
 
 import com.enigmacamp.constant.APIUrl;
+import com.enigmacamp.model.dto.request.AssignHikerRequest;
 import com.enigmacamp.model.dto.request.HikerRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.CommonResponse;
@@ -21,6 +22,25 @@ import java.util.List;
 public class HikerController {
     @Autowired
     private HikerService hikerService;
+
+    @PostMapping
+    public ResponseEntity<CommonResponse<HikerResponse>> addHiker(
+            @RequestBody AssignHikerRequest request
+    ){
+        HikerRequest hikerRequest = HikerRequest.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .phoneNumber(request.getPhoneNumber())
+                .build();
+        HikerResponse hikerResponse = hikerService.create(hikerRequest);
+        CommonResponse<HikerResponse> response = CommonResponse.<HikerResponse>builder()
+                .status(HttpStatus.CREATED.value())
+                .message("Hiker added successfully")
+                .data(hikerResponse)
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @GetMapping
     public ResponseEntity<CommonResponse<List<HikerResponse>>> getAllHikers(

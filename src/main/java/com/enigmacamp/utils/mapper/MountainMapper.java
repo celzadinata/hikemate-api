@@ -55,4 +55,9 @@ public class MountainMapper implements EntityMapper<Mountain, MountainRequest, M
                 .isOpen(request.getIsOpen())
                 .build();
     }
+
+    @Override
+    public Mountain responseToEntity(MountainResponse response) {
+        return null;
+    }
 }
