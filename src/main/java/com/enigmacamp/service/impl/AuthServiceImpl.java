@@ -146,6 +146,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(request.getEmail())
                 .phoneNumber(request.getPhone())
                 .ktpImage(request.getImage())
+                .profilePicture(request.getProfilePicture())
                 .userAccount(account)
                 .build();
     }
