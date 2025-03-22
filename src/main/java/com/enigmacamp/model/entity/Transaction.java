@@ -57,6 +57,10 @@ public class Transaction extends DateUtils {
     @Column(name = "is_down", nullable = true)
     private Boolean isDown;
 
+    @ManyToOne
+    @JoinColumn(name = "route_id", nullable = false)
+    private Route route;
+
 //    @Column(name = "qr_code_url", nullable = true)
 //    private Image qrCode;
 

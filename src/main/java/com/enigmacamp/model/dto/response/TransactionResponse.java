@@ -23,6 +23,7 @@ public class TransactionResponse {
     private String qrCodeUrl;
     private String paymentUrl;
     private String paymentStatus;
+    private String route;
     private HikerResponse hiker;
     private RangerResponse ranger;
     private MountainResponse mountain;

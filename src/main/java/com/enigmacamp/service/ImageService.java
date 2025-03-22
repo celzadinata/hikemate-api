@@ -7,4 +7,5 @@ public interface ImageService {
     Image create(MultipartFile image, String folderName);
     Image getImage(String id);
     void deleteById(String id);
+    void removeImageFromCloudinary(String imagePath);
 }

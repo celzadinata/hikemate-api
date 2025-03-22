@@ -62,6 +62,20 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteById(String id) {
+        Image image = findByIdOrThrowNotFound(id);
+        imageRepository.delete(image);
+    }
 
+    @Override
+    public void removeImageFromCloudinary(String imagePath) {
+        try {
+            cloudinary.uploader().destroy(imagePath, ObjectUtils.asMap());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to remove image from Cloudinary", e);
+        }
+    }
+
+    private Image findByIdOrThrowNotFound(String id){
+        return imageRepository.findById(id).orElseThrow(() -> new RuntimeException("Image not found!", new RuntimeException("Image not found!", new Throwable())));
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MountainService {
     MountainResponse create(MountainRequest request);
-    Page<MountainResponse> getAll(String name, String startPrice, String endPrice, String status, String rangerId, String location, SearchRequest searchRequest);
+    Page<MountainResponse> getAll(String name, String startPrice, String endPrice, String status, String location, SearchRequest searchRequest);
     MountainResponse getById(String id);
     MountainResponse update(MountainRequest request);
     MountainResponse delete(String id);

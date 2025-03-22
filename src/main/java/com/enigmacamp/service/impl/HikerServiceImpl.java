@@ -4,6 +4,7 @@ import com.enigmacamp.model.dto.request.HikerRequest;
 import com.enigmacamp.model.dto.request.SearchRequest;
 import com.enigmacamp.model.dto.response.HikerResponse;
 import com.enigmacamp.model.entity.Hiker;
+import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.repository.HikerRepository;
 import com.enigmacamp.service.HikerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
@@ -104,9 +105,14 @@ public class HikerServiceImpl implements HikerService {
         return findByIdOrThrowNotFound(id);
     }
 
+    @Override
+    public Hiker getByUserAccountEntity(UserAccount userAccount) {
+        return hikerRepository.findHikerByUserAccount(userAccount).orElseThrow(() -> new RuntimeException("Hiker Not Found!"));
+    }
+
     private Hiker findByIdOrThrowNotFound(String id){
         return hikerRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("customer Not Found", new RuntimeException("customer ga ketemu"))
+                () -> new ResourceNotFoundException("Hiker Not Found", new RuntimeException("Hiker ga ketemu"))
         );
     }
 }
