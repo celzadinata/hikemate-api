@@ -12,9 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponse {
-    private String userAccountId;
-    private String userLoggedInId;
-    private String name;
     private String token;
-    private List<String> role;
 }

@@ -7,21 +7,24 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigmacamp.model.dto.response.JwtClaims;
 import com.enigmacamp.model.entity.UserAccount;
+import com.enigmacamp.service.HikerService;
 import com.enigmacamp.service.JwtService;
+import com.enigmacamp.service.RangerService;
 import com.enigmacamp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class JwtServiceImpl implements JwtService {
-
 
     @Value("${app.hikemate.jwt.app-name}")
     private String issuer;
@@ -35,12 +38,22 @@ public class JwtServiceImpl implements JwtService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private HikerService hikerService;
+
+    @Autowired
+    private RangerService rangerService;
+
+
     @Override
     public String generateToken(UserAccount userAccount) {
         try {
+            Result result = getResult(userAccount);
             return JWT.create()
                     .withIssuer(issuer)
                     .withClaim("userAccountId", userAccount.getId())
+                    .withClaim("userLoggedInId", result.userLoggedInId())
+                    .withClaim("name", result.userLoggedInName())
                     .withClaim("roles", userAccount.getRole().stream().map(role -> role.getRole().toString()).toList())
                     .withIssuedAt(new Date())
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationMs))
@@ -51,6 +64,7 @@ public class JwtServiceImpl implements JwtService {
             throw new RuntimeException(exception.getMessage());
         }
     }
+
 
     @Override
     public String refreshToken(String token) {
@@ -90,6 +104,27 @@ public class JwtServiceImpl implements JwtService {
         } catch (RuntimeException e) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid or expired token!");
         }
+    }
+
+    private Result getResult(UserAccount userAccount) {
+        String role = userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList().get(0);
+        String userLoggedInId = "";
+        String userLoggedInName = "";
+
+        if (Objects.equals(role, "RANGER")) {
+            userLoggedInId =  rangerService.getByUserAccountEntity(userAccount).getId();
+            userLoggedInName = rangerService.getByUserAccountEntity(userAccount).getName();
+        } else if (Objects.equals(role, "HIKER")) {
+            userLoggedInId = hikerService.getByUserAccountEntity(userAccount).getId();
+            userLoggedInName = hikerService.getByUserAccountEntity(userAccount).getName();
+        } else {
+            userLoggedInId = userService.loadUserById(userAccount.getId()).getId();
+            userLoggedInName = "super admin";
+        }
+        return new Result(userLoggedInId, userLoggedInName);
+    }
+
+    private record Result(String userLoggedInId, String userLoggedInName) {
     }
 
     public String parseJwt(String token){
