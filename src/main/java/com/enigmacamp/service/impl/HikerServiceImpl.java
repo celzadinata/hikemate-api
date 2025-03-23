@@ -12,7 +12,7 @@ import com.enigmacamp.service.HikerService;
 import com.enigmacamp.service.ImageService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.HikerMapper;
-import com.enigmacamp.utils.mapper.SortingUtil;
+import com.enigmacamp.utils.SortingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

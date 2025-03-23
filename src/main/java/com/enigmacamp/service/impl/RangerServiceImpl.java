@@ -10,7 +10,7 @@ import com.enigmacamp.repository.RangerRepository;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.RangerMapper;
-import com.enigmacamp.utils.mapper.SortingUtil;
+import com.enigmacamp.utils.SortingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

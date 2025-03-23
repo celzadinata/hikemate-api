@@ -10,5 +10,7 @@ public interface RouteService {
     RouteResponse create(RouteRequest request);
     Page<RouteResponse> getAll(SearchRequest searchRequest);
     RouteResponse getById(String id);
+    RouteResponse update(RouteRequest request);
+    RouteResponse delete(String id);
     Route getByIdEntity(String id);
 }

@@ -8,7 +8,7 @@ import com.enigmacamp.model.dto.response.CommonResponse;
 import com.enigmacamp.model.dto.response.HikerResponse;
 import com.enigmacamp.model.dto.response.PagingResponse;
 import com.enigmacamp.service.HikerService;
-import com.enigmacamp.utils.mapper.PagingUtil;
+import com.enigmacamp.utils.PagingUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;

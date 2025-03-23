@@ -1,4 +1,4 @@
-package com.enigmacamp.utils.mapper;
+package com.enigmacamp.utils;
 
 public class PagingUtil {
     public static Integer validatePage(Integer page) {
