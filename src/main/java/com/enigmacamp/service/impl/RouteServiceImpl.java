@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class RouteServiceImpl implements RouteService {
@@ -34,19 +35,16 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    public Page<RouteResponse> getAll(SearchRequest searchRequest) {
+    public List<RouteResponse> getAll(SearchRequest searchRequest) {
         Sort.Direction sortDirection = searchRequest.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sortDirection, searchRequest.getSortBy());
-        return routeRepository.findAll(pageable).map(routeMapper::entityToResponse);
+        return routeRepository.findAll().stream().map(routeMapper::entityToResponse).toList();
     }
 
     @Override
     public RouteResponse getById(String id) {
         Route route = findByIdOrThrowNotFound(id);
-        return RouteResponse.builder()
-                .id(route.getId())
-                .routeName(route.getRoute())
-                .build();
+        return routeMapper.entityToResponse(route);
     }
 
     @Override

@@ -12,9 +12,9 @@ public class MountainRouteMapper implements EntityMapper<MountainRoute, Mountain
     public MountainRouteResponse entityToResponse(MountainRoute entity) {
         return MountainRouteResponse.builder()
                 .id(entity.getId())
-                .mountainId(entity.getMountain().getId())
-                .routeId(entity.getRoute().getId())
-                .routeName(entity.getRoute().getRoute())
+                .mountainId(entity.getMountain() != null ? entity.getMountain().getId() : null)
+                .routeId(entity.getRoute() != null ? entity.getRoute().getId() : null)
+                .routeName(entity.getRoute() != null ? entity.getRoute().getRoute() : null)
                 .build();
     }
 

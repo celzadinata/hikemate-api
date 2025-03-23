@@ -190,8 +190,6 @@ public class MountainServiceImpl implements MountainService {
         List<MountainRoute> mountainRouteList = new ArrayList<>();
         routes.forEach(route -> {
             MountainRoute mountainRoute = mountainRouteService.create(MountainRouteRequest.builder().build());
-            mountainRoute.setMountain(newMountain);
-            mountainRoute.setRoute(route);
             mountainRouteList.add(mountainRoute);
         });
         return mountainRouteList;
