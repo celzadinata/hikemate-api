@@ -118,19 +118,21 @@ public class MountainServiceImpl implements MountainService {
 
     private void handleImages(MountainRequest request, Mountain mountain) {
         if (request.getImage() != null) {
-            if (mountain.getImage() != null) {
-                imageService.removeImageFromCloudinary(mountain.getImage().getPath());
-                imageService.deleteById(mountain.getImage().getId());
-            }
+            Image oldMountainCover = mountain.getImage() != null ? mountain.getImage() : new Image();
             mountain.setImage(imageService.create(request.getImage(), Tables.MOUNTAINS));
+            if (mountain.getImage() != null) {
+                imageService.removeImageFromCloudinary(oldMountainCover.getPath());
+                imageService.deleteById(oldMountainCover.getId());
+            }
         }
 
         if (request.getBaseCampImages() != null) {
-            mountain.getBaseCampImages().forEach(image -> {
+            List<Image> oldBaseCampImages = !mountain.getBaseCampImages().isEmpty() ? mountain.getBaseCampImages() : List.of(new Image());
+            mountain.setBaseCampImages(createImageList(request.getBaseCampImages()));
+            oldBaseCampImages.forEach(image -> {
                 imageService.removeImageFromCloudinary(image.getPath());
                 imageService.deleteById(image.getId());
             });
-            mountain.setBaseCampImages(createImageList(request.getBaseCampImages()));
         }
     }
 
