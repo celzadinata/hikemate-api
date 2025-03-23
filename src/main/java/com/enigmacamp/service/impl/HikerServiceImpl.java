@@ -125,14 +125,19 @@ public class HikerServiceImpl implements HikerService {
     }
 
     private Specification<Hiker> hitAllSpecification(String request, String fieldName) {
+        Specification<Hiker> specification = (root, query, cb) -> cb.isNull(root.get("deletedAt"));
+
         if (request != null && !request.isEmpty()) {
             if ("name".equals(fieldName)) {
-                return (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                Specification<Hiker> nameSpecification = (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                specification = specification.and(nameSpecification);
             } else {
-                return (root, query, cb) -> cb.equal(root.get("code"), request);
+                Specification<Hiker> codeSpecification = (root, query, cb) -> cb.equal(root.get("code"), request);
+                specification = specification.and(codeSpecification);
             }
         }
-        return null;
+
+        return specification;
     }
 
     @Override
@@ -142,7 +147,7 @@ public class HikerServiceImpl implements HikerService {
 
     @Override
     public Hiker getByUserAccountEntity(UserAccount userAccount) {
-        return hikerRepository.findHikerByUserAccount(userAccount).orElseThrow(() -> new RuntimeException("Hiker Not Found!"));
+        return hikerRepository.findHikerByUserAccountAndDeletedAtIsNull(userAccount).orElseThrow(() -> new RuntimeException("Hiker Not Found!"));
     }
 
     private Hiker findByIdOrThrowNotFound(String id){

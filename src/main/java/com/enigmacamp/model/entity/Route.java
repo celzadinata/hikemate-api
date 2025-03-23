@@ -1,6 +1,7 @@
 package com.enigmacamp.model.entity;
 
 import com.enigmacamp.constant.Tables;
+import com.enigmacamp.model.utils.DateUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = Tables.ROUTES)
-public class Route {
+public class Route extends DateUtils {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

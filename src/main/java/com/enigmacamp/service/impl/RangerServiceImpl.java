@@ -97,14 +97,19 @@ public class RangerServiceImpl implements RangerService {
     }
 
     private Specification<Ranger> hitAllSpecification(String request, String fieldName) {
+        Specification<Ranger> specification = (root, query, cb) -> cb.isNull(root.get("deletedAt"));
+
         if (request != null && !request.isEmpty()) {
             if ("name".equals(fieldName)) {
-                return (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                Specification<Ranger> nameSpecification = (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                specification = specification.and(nameSpecification);
             } else {
-                return (root, query, cb) -> cb.equal(root.get("code"), request);
+                Specification<Ranger> codeSpecification = (root, query, cb) -> cb.equal(root.get("code"), request);
+                specification = specification.and(codeSpecification);
             }
         }
-        return null;
+
+        return specification;
     }
 
     @Override
