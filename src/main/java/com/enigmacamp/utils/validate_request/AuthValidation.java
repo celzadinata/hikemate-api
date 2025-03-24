@@ -3,9 +3,11 @@ package com.enigmacamp.utils.validate_request;
 import com.enigmacamp.model.dto.request.NewUserRequest;
 import com.enigmacamp.utils.EntityValidation;
 import com.enigmacamp.utils.UtilityTool;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+@Configuration
 public class AuthValidation implements EntityValidation<NewUserRequest> {
     @Override
     public void validateCreateRequest(NewUserRequest request) {
