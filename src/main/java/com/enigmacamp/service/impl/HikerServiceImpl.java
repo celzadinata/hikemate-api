@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,9 @@ public class HikerServiceImpl implements HikerService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
 
@@ -161,8 +165,8 @@ public class HikerServiceImpl implements HikerService {
         hiker.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : hiker.getPhoneNumber());
         hiker.setUpdatedAt(currentTimeStamp);
 
-        if (request.getUserAccount() != null) {
-            hiker.setUserAccount(request.getUserAccount());
+        if (request.getPassword() != null && !request.getPassword().isEmpty() ) {
+            hiker.getUserAccount().setPassword(passwordEncoder.encode(request.getPassword()));
         }
     }
 }
