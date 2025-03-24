@@ -67,7 +67,7 @@ public class HikerValidation implements EntityValidation<HikerRequest> {
     }
 
     private void validateEmail(String email) {
-        if (UtilityTool.validate(email)) {
+        if (!UtilityTool.validate(email)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email format");
         }
     }

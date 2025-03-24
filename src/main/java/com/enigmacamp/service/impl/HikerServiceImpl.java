@@ -50,7 +50,6 @@ public class HikerServiceImpl implements HikerService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse create(HikerRequest request) {
-        hikerValidation.validateCreateRequest(request);
         Hiker newHiker = hikerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newHiker.setUserAccount(request.getUserAccount());
