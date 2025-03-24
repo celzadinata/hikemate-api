@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(APIUrl.AUTH + "/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST,APIUrl.MOUNTAIN_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
                         .requestMatchers(HttpMethod.GET, APIUrl.MOUNTAIN_API +"/**").permitAll()
