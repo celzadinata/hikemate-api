@@ -77,7 +77,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, APIUrl.TRANSACTION_API + "/statistic**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
                         .requestMatchers(HttpMethod.PATCH, APIUrl.TRANSACTION_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
 
-                        .requestMatchers(APIUrl.MOUNTAIN_API + "/**").permitAll()
+                        .requestMatchers(APIUrl.GEOAPIFY_API + "/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
