@@ -73,12 +73,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, String rangerId, String hikerId, String mountainId, SearchRequest searchRequest) {
+    public Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, String rangerId, String hikerId, String mountainId, String hikerName, SearchRequest searchRequest) {
         Ranger ranger = findRangerById(rangerId);
         Hiker hiker = findHikerById(hikerId);
         Mountain mountain = findMountainById(mountainId);
 
-        TransactionSpecification specification = new TransactionSpecification(isUp, isDown, status, ranger, hiker, mountain);
+        TransactionSpecification specification = new TransactionSpecification(isUp, isDown, status, ranger, hiker, mountain, hikerName);
         Sort.Direction sortDirection = searchRequest.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sortDirection, searchRequest.getSortBy());
         Page<Transaction> transactionPage = transactionRepository.findAll(specification, pageable);
