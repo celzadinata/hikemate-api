@@ -16,6 +16,7 @@ import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.service.*;
 import com.enigmacamp.utils.mapper.HikerMapper;
 import com.enigmacamp.utils.mapper.ImageMapper;
+import com.enigmacamp.utils.validate_request.AuthValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -56,9 +57,13 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private ImageMapper imageMapper;
 
+    @Autowired
+    private AuthValidation authValidation;
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerHiker(NewUserRequest request) {
+        authValidation.validateCreateRequest(request);
         String password = passwordEncoder.encode(request.getPassword());
         Role hikerRole = roleService.getOrSaveRole(UserRole.HIKER);
 
@@ -77,6 +82,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerRanger(NewUserRequest request) {
+        authValidation.validateCreateRequest(request);
         String password = passwordEncoder.encode(request.getPassword());
         Role hikerRole = roleService.getOrSaveRole(UserRole.RANGER);
 

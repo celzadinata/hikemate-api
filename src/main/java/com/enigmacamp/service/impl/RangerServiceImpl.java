@@ -11,6 +11,7 @@ import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.RangerMapper;
 import com.enigmacamp.utils.SortingUtil;
+import com.enigmacamp.utils.validate_request.AuthValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,9 @@ public class RangerServiceImpl implements RangerService {
 
     @Autowired
     private RangerMapper rangerMapper;
+
+    @Autowired
+    private AuthValidation authValidation;
 
     private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
 
@@ -83,7 +87,6 @@ public class RangerServiceImpl implements RangerService {
                 .phoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : existingRanger.getPhoneNumber())
                 .assignedAt(existingRanger.getAssignedAt())
                 .userAccount(request.getUserAccount() != null ? request.getUserAccount() : existingRanger.getUserAccount())
-                .assignedAt(new Timestamp(new Date().getTime()))
                 .build();
         return rangerMapper.entityToResponse(rangerRepository.save(updatedRanger));
     }

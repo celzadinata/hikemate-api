@@ -13,6 +13,7 @@ import com.enigmacamp.service.ImageService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.HikerMapper;
 import com.enigmacamp.utils.SortingUtil;
+import com.enigmacamp.utils.validate_request.HikerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,25 +42,20 @@ public class HikerServiceImpl implements HikerService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private HikerValidation hikerValidation;
+
     private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse create(HikerRequest request) {
+        hikerValidation.validateCreateRequest(request);
         Hiker newHiker = hikerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newHiker.setUserAccount(request.getUserAccount());
         }
-
-        if (request.getKtpImage() != null){
-            Image ktp = imageService.create(request.getKtpImage(), Tables.HIKER);
-            newHiker.setKtp(ktp);
-        }
-
-        if (request.getProfilePicture() != null){
-            Image profilePicture = imageService.create(request.getProfilePicture(), Tables.HIKER);
-            newHiker.setProfilePicture(profilePicture);
-        }
+        handleImages(request, newHiker, "create");
 
         newHiker.setCreatedAt(currentTimeStamp);
         newHiker.setUpdatedAt(currentTimeStamp);
@@ -97,25 +93,11 @@ public class HikerServiceImpl implements HikerService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse updateHiker(HikerRequest request) {
+        hikerValidation.validateUpdateRequest(request);
         Hiker existingHiker = findByIdOrThrowNotFound(request.getId());
         updateHikerFields(request, existingHiker);
-        if (request.getKtpImage() != null) {
-            String oldKtpUrl = existingHiker.getKtp().getPath();
-            String oldKtpId = existingHiker.getKtp().getId();
-            Image ktp = imageService.create(request.getKtpImage(), Tables.HIKER);
-            existingHiker.setKtp(ktp);
-            imageService.removeImageFromCloudinary(oldKtpUrl);
-            imageService.deleteById(oldKtpId);
-        }
+        handleImages(request, existingHiker, "update");
 
-        if (request.getProfilePicture() != null) {
-            String oldProfilePictureUrl = existingHiker.getProfilePicture().getPath();
-            String oldProfilePictureId = existingHiker.getProfilePicture().getId();
-            Image profilePicture = imageService.create(request.getProfilePicture(), Tables.HIKER);
-            existingHiker.setProfilePicture(profilePicture);
-            imageService.removeImageFromCloudinary(oldProfilePictureUrl);
-            imageService.deleteById(oldProfilePictureId);
-        }
         hikerRepository.saveAndFlush(existingHiker);
         return hikerMapper.entityToResponse(existingHiker);
     }
@@ -169,4 +151,25 @@ public class HikerServiceImpl implements HikerService {
             hiker.getUserAccount().setPassword(passwordEncoder.encode(request.getPassword()));
         }
     }
+
+    private void handleImages(HikerRequest request, Hiker hiker, String method) {
+        if (request.getKtpImage() != null) {
+            Image oldKtp = hiker.getKtp() != null ? hiker.getKtp() : null;
+            hiker.setKtp(imageService.create(request.getKtpImage(), Tables.HIKER));
+            if (oldKtp != null && method.equals("update")) {
+                imageService.removeImageFromCloudinary(oldKtp.getPath());
+                imageService.deleteById(oldKtp.getId());
+            }
+        }
+
+        if (request.getProfilePicture() != null) {
+            Image oldProfilePicture = hiker.getProfilePicture() != null ? hiker.getProfilePicture() : null;
+            hiker.setProfilePicture(imageService.create(request.getProfilePicture(), Tables.HIKER));
+            if (oldProfilePicture != null && method.equals("update")) {
+                imageService.removeImageFromCloudinary(oldProfilePicture.getPath());
+                imageService.deleteById(oldProfilePicture.getId());
+            }
+        }
+    }
 }
+

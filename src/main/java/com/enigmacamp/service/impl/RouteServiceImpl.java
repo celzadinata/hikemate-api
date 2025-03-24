@@ -7,8 +7,8 @@ import com.enigmacamp.model.entity.Route;
 import com.enigmacamp.repository.RouteRepository;
 import com.enigmacamp.service.RouteService;
 import com.enigmacamp.utils.mapper.RouteMapper;
+import com.enigmacamp.utils.validate_request.RouteValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,10 +26,14 @@ public class RouteServiceImpl implements RouteService {
     @Autowired
     private RouteMapper routeMapper;
 
+    @Autowired
+    private RouteValidation routeValidation;
+
     private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
 
     @Override
     public RouteResponse create(RouteRequest request) {
+        routeValidation.validateCreateRequest(request);
         Route route = routeRepository.save(Route.builder().route(request.getRouteName()).build());
         return routeMapper.entityToResponse(route);
     }
@@ -49,6 +53,7 @@ public class RouteServiceImpl implements RouteService {
 
     @Override
     public RouteResponse update(RouteRequest request) {
+        routeValidation.validateUpdateRequest(request);
         Route existingRoute = findByIdOrThrowNotFound(request.getId());
         existingRoute.setRoute(request.getRouteName() != null ? request.getRouteName() : existingRoute.getRoute());
         Route updatedRoute = routeRepository.save(existingRoute);

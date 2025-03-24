@@ -118,18 +118,18 @@ public class MountainServiceImpl implements MountainService {
 
     private void handleImages(MountainRequest request, Mountain mountain, String method) {
         if (request.getImage() != null) {
-            Image oldMountainCover = mountain.getImage() != null ? mountain.getImage() : new Image();
+            Image oldMountainCover = mountain.getImage() != null ? mountain.getImage() : null;
             mountain.setImage(imageService.create(request.getImage(), Tables.MOUNTAINS));
-            if (mountain.getImage() != null && method.equals("update")) {
+            if (oldMountainCover != null && method.equals("update")) {
                 imageService.removeImageFromCloudinary(oldMountainCover.getPath());
                 imageService.deleteById(oldMountainCover.getId());
             }
         }
 
         if (request.getBaseCampImages() != null) {
-            List<Image> oldBaseCampImages = mountain.getBaseCampImages() != null && !mountain.getBaseCampImages().isEmpty() ? mountain.getBaseCampImages() : List.of(new Image());
+            List<Image> oldBaseCampImages = mountain.getBaseCampImages() != null && !mountain.getBaseCampImages().isEmpty() ? mountain.getBaseCampImages() : null;
             mountain.setBaseCampImages(createImageList(request.getBaseCampImages()));
-            if (method.equals("update")) {
+            if (oldBaseCampImages != null && method.equals("update")) {
                 oldBaseCampImages.forEach(image -> {
                     imageService.removeImageFromCloudinary(image.getPath());
                     imageService.deleteById(image.getId());
@@ -145,15 +145,15 @@ public class MountainServiceImpl implements MountainService {
     }
 
     private void updateMountainFields(MountainRequest request, Mountain mountain) {
-        mountain.setName(request.getName());
-        mountain.setLocation(request.getLocation());
-        mountain.setStatus(MountainStatus.valueOf(request.getStatus()));
-        mountain.setPrice(request.getPrice());
-        mountain.setDescription(request.getDescription());
-        mountain.setToilet(request.getToilet());
-        mountain.setWater(request.getWater());
-        mountain.setQuotaLimit(request.getQuotaLimit());
-        mountain.setIsOpen(request.getIsOpen());
+        mountain.setName(request.getName() != null ? request.getName() : mountain.getName());
+        mountain.setLocation(request.getLocation() != null ? request.getLocation() : mountain.getLocation());
+        mountain.setStatus(request.getStatus() != null ? MountainStatus.valueOf(request.getStatus()) : mountain.getStatus());
+        mountain.setPrice(request.getPrice() != null ? request.getPrice() : mountain.getPrice());
+        mountain.setDescription(request.getDescription() != null ? request.getDescription() : mountain.getDescription());
+        mountain.setToilet(request.getToilet() != null ? request.getToilet() : mountain.getToilet());
+        mountain.setWater(request.getWater() != null ? request.getWater() : mountain.getWater());
+        mountain.setQuotaLimit(request.getQuotaLimit() != null ? request.getQuotaLimit() : mountain.getQuotaLimit());
+        mountain.setIsOpen(request.getIsOpen() != null ? request.getIsOpen() : mountain.getIsOpen());
         mountain.setUpdatedAt(currentTimeStamp);
 
         if (request.getAssignedRanger() != null && !request.getAssignedRanger().getUserId().isEmpty()) {

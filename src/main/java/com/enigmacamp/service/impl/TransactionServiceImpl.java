@@ -129,13 +129,8 @@ public class TransactionServiceImpl implements TransactionService {
     private Boolean checkIfMountainQuotaFull(TransactionRequest request, Mountain mountain){
         String startDate = request.getStartDate().substring(0, 10);
         System.out.println(startDate);
-
         Integer startDateCount = transactionRepository.countTotalTransactionByStartDateAndIsUp(startDate, mountain.getId());
         Integer endDateCount = transactionRepository.countTotalTransactionByEndDateAndIsUp(startDate, mountain.getId());
-        System.out.println("Start date count: " + startDateCount);
-        System.out.println("End date count: " + endDateCount);
-        System.out.println("Mountain quota: " + mountain.getQuotaLimit());
-
         return startDateCount + endDateCount >= mountain.getQuotaLimit();
     }
 
