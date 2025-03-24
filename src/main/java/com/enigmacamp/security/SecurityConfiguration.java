@@ -40,42 +40,41 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/**").permitAll()
-//
-//                        .requestMatchers(HttpMethod.POST,APIUrl.MOUNTAIN_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.MOUNTAIN_API +"/**").permitAll()
-//                        .requestMatchers(HttpMethod.PATCH, APIUrl.MOUNTAIN_API +"/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.DELETE, APIUrl.MOUNTAIN_API +"/**").hasAuthority(UserRole.SUPERADMIN.name())
-//
-//                        .requestMatchers(HttpMethod.POST, APIUrl.HIKER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.HIKER_API + "/").hasAuthority(UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.HIKER_API + "/{id}").hasAnyAuthority(UserRole.HIKER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.PATCH, APIUrl.HIKER_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.DELETE, APIUrl.HIKER_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.SUPERADMIN.name())
-//
-//                        .requestMatchers(APIUrl.IMAGE_API + "/**").permitAll()
-//
-//                        .requestMatchers(HttpMethod.POST, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.DELETE, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//
-//                        .requestMatchers(HttpMethod.POST, APIUrl.PAYMENT_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//
-//                        .requestMatchers(HttpMethod.POST, APIUrl.RANGER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.RANGER_API + "/**").hasAnyAuthority(UserRole.RANGER.name(),UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.PATCH, APIUrl.RANGER_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.DELETE, APIUrl.RANGER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//
-//
-//                        .requestMatchers(HttpMethod.POST, APIUrl.ROUTE_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(),UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.PATCH, APIUrl.ROUTE_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.DELETE, APIUrl.ROUTE_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
-//
-//                        .requestMatchers(HttpMethod.POST, APIUrl.TRANSACTION_API + "/**").hasAuthority(UserRole.HIKER.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.TRANSACTION_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, APIUrl.TRANSACTION_API + "/statistic**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
-//                        .requestMatchers(HttpMethod.PATCH, APIUrl.TRANSACTION_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST,APIUrl.MOUNTAIN_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.MOUNTAIN_API +"/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, APIUrl.MOUNTAIN_API +"/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, APIUrl.MOUNTAIN_API +"/**").hasAuthority(UserRole.SUPERADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, APIUrl.HIKER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.HIKER_API + "/").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.HIKER_API + "/{id}").hasAnyAuthority(UserRole.HIKER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH, APIUrl.HIKER_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, APIUrl.HIKER_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.SUPERADMIN.name())
+
+                        .requestMatchers(APIUrl.IMAGE_API + "/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, APIUrl.PAYMENT_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, APIUrl.RANGER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.RANGER_API + "/**").hasAnyAuthority(UserRole.RANGER.name(),UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH, APIUrl.RANGER_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, APIUrl.RANGER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+
+
+                        .requestMatchers(HttpMethod.POST, APIUrl.ROUTE_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(),UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH, APIUrl.ROUTE_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, APIUrl.ROUTE_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+
+                        .requestMatchers(HttpMethod.POST, APIUrl.TRANSACTION_API + "/**").hasAuthority(UserRole.HIKER.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.TRANSACTION_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.GET, APIUrl.TRANSACTION_API + "/statistic**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.PATCH, APIUrl.TRANSACTION_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
 
                         .anyRequest().authenticated())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
