@@ -316,7 +316,6 @@ public class DatabaseSeeder {
 
         TransactionRequest transactionRequest1 = TransactionRequest.builder()
                 .hikerId(hiker1.getId())
-                .rangerId(ranger1.getId())
                 .mountainId(mountain1.getId())
                 .startDate("2025-04-19 14:26:02.028")
                 .endDate("2025-04-21 14:26:02.028")
@@ -325,7 +324,6 @@ public class DatabaseSeeder {
 
         TransactionRequest transactionRequest2 = TransactionRequest.builder()
                 .hikerId(hiker2.getId())
-                .rangerId(ranger1.getId())
                 .mountainId(mountain1.getId())
                 .startDate("2025-08-07 10:26:02.028")
                 .endDate("2025-08-10 08:26:02.028")
@@ -334,7 +332,6 @@ public class DatabaseSeeder {
 
         TransactionRequest transactionRequest3 = TransactionRequest.builder()
                 .hikerId(hiker4.getId())
-                .rangerId(ranger2.getId())
                 .mountainId(mountain2.getId())
                 .startDate("2025-11-27 20:26:02.028")
                 .endDate("2025-11-29 20:26:02.028")
@@ -343,7 +340,6 @@ public class DatabaseSeeder {
 
         TransactionRequest transactionRequest4 = TransactionRequest.builder()
                 .hikerId(hiker3.getId())
-                .rangerId(ranger1.getId())
                 .mountainId(mountain1.getId())
                 .startDate("2025-04-17 14:26:02.028")
                 .endDate("2025-04-19 14:26:02.028")
@@ -352,7 +348,6 @@ public class DatabaseSeeder {
 
         TransactionRequest transactionRequest5 = TransactionRequest.builder()
                 .hikerId(hiker1.getId())
-                .rangerId(ranger2.getId())
                 .mountainId(mountain2.getId())
                 .startDate("2025-09-13 19:26:02.028")
                 .endDate("2025-09-16 17:26:02.028")

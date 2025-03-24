@@ -5,7 +5,6 @@ import com.enigmacamp.model.dto.response.JwtClaims;
 import com.enigmacamp.service.JwtService;
 import com.enigmacamp.service.UserService;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,22 +27,28 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
-        String bearerToken = request.getHeader(AUTH_HEADER);
-        System.out.println("Bearer token: " + bearerToken);
+            FilterChain filterChain) throws IOException {
+        try {
+            String bearerToken = request.getHeader(AUTH_HEADER);
+            System.out.println("Bearer token: " + bearerToken);
 
-        if (bearerToken != null && jwtService.verifyJwtToken(bearerToken)) {
-            JwtClaims jwtClaims = jwtService.getClaimsByToken(bearerToken);
-            UserAccount userAccount = userService.loadUserById(jwtClaims.getUserAccountId());
+            if (bearerToken != null && jwtService.verifyJwtToken(bearerToken)) {
+                JwtClaims jwtClaims = jwtService.getClaimsByToken(bearerToken);
+                UserAccount userAccount = userService.loadUserById(jwtClaims.getUserAccountId());
 
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    userAccount.getUsername(),
-                    userAccount.getPassword(),
-                    userAccount.getAuthorities()
-            );
-            authentication.setDetails(new WebAuthenticationDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userAccount.getUsername(),
+                        userAccount.getPassword(),
+                        userAccount.getAuthorities()
+                );
+                authentication.setDetails(new WebAuthenticationDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            String[] errorMessage = e.getMessage().split(" ");
+            response.setStatus(Integer.parseInt(errorMessage[0]));
+            response.getWriter().println(e.getMessage());
         }
-        filterChain.doFilter(request, response);
     }
 }

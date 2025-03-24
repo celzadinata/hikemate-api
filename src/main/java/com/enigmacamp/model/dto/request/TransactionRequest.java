@@ -17,9 +17,6 @@ public class TransactionRequest {
     @JsonAlias("hiker_id")
     private String hikerId;
 
-    @JsonAlias("ranger_pic_id")
-    private String rangerId;
-
     @JsonAlias("mountain_id")
     private String mountainId;
 

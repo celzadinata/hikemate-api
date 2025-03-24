@@ -48,7 +48,7 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse create(TransactionRequest request) {
         Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Mountain mountain = mountainService.getByIdEntity(request.getMountainId());
-        Ranger ranger = rangerService.getByIdEntity(request.getRangerId());
+        Ranger ranger = rangerService.getByMountainIdEntity(mountain);
         Hiker hiker = hikerService.getByIdEntity(request.getHikerId());
         Route route = routeService.getByIdEntity(request.getRouteId());
         Transaction newTransaction = transactionMapper.requestToEntity(request);
