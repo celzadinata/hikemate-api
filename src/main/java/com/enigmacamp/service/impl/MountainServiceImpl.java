@@ -54,7 +54,7 @@ public class MountainServiceImpl implements MountainService {
         Mountain newMountain = mountainMapper.requestToEntity(request);
         newMountain.setCreatedAt(currentTimeStamp);
         newMountain.setUpdatedAt(currentTimeStamp);
-        handleImages(request, newMountain);
+        handleImages(request, newMountain, "create");
         return createMountainResponse(request, newMountain);
     }
 
@@ -94,7 +94,7 @@ public class MountainServiceImpl implements MountainService {
         mountainValidation.validateUpdateRequest(request);
         Mountain mountain = findByIdOrThrowNotFound(request.getId());
         updateMountainFields(request, mountain);
-        handleImages(request, mountain);
+        handleImages(request, mountain, "update");
         mountainRepository.saveAndFlush(mountain);
         return mountainMapper.entityToResponse(mountain);
     }
@@ -116,23 +116,25 @@ public class MountainServiceImpl implements MountainService {
         return mountainRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mountain with id: " + id + " is not found!"));
     }
 
-    private void handleImages(MountainRequest request, Mountain mountain) {
+    private void handleImages(MountainRequest request, Mountain mountain, String method) {
         if (request.getImage() != null) {
             Image oldMountainCover = mountain.getImage() != null ? mountain.getImage() : new Image();
             mountain.setImage(imageService.create(request.getImage(), Tables.MOUNTAINS));
-            if (mountain.getImage() != null) {
+            if (mountain.getImage() != null && method.equals("update")) {
                 imageService.removeImageFromCloudinary(oldMountainCover.getPath());
                 imageService.deleteById(oldMountainCover.getId());
             }
         }
 
         if (request.getBaseCampImages() != null) {
-            List<Image> oldBaseCampImages = !mountain.getBaseCampImages().isEmpty() ? mountain.getBaseCampImages() : List.of(new Image());
+            List<Image> oldBaseCampImages = mountain.getBaseCampImages() != null && !mountain.getBaseCampImages().isEmpty() ? mountain.getBaseCampImages() : List.of(new Image());
             mountain.setBaseCampImages(createImageList(request.getBaseCampImages()));
-            oldBaseCampImages.forEach(image -> {
-                imageService.removeImageFromCloudinary(image.getPath());
-                imageService.deleteById(image.getId());
-            });
+            if (method.equals("update")) {
+                oldBaseCampImages.forEach(image -> {
+                    imageService.removeImageFromCloudinary(image.getPath());
+                    imageService.deleteById(image.getId());
+                });
+            }
         }
     }
 

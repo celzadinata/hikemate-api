@@ -13,8 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -50,6 +52,9 @@ public class TransactionServiceImpl implements TransactionService {
         Mountain mountain = mountainService.getByIdEntity(request.getMountainId());
         Ranger ranger = rangerService.getByMountainIdEntity(mountain);
         Hiker hiker = hikerService.getByIdEntity(request.getHikerId());
+        if (hiker.getKtp() == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "KTP is needed for transaction!");
+        }
         Route route = routeService.getByIdEntity(request.getRouteId());
         Transaction newTransaction = transactionMapper.requestToEntity(request);
         newTransaction.setMountain(mountain);
