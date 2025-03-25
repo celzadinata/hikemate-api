@@ -59,7 +59,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.HIKER.name(), UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, APIUrl.MOUNTAIN_ROUTE_API + "/**").hasAnyAuthority(UserRole.RANGER.name(), UserRole.SUPERADMIN.name())
 
-                        .requestMatchers(HttpMethod.POST, APIUrl.PAYMENT_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
+                        .requestMatchers(HttpMethod.POST, APIUrl.PAYMENT_API + "/**").hasAuthority(UserRole.HIKER.name())
 
                         .requestMatchers(HttpMethod.POST, APIUrl.RANGER_API + "/**").hasAuthority(UserRole.SUPERADMIN.name())
                         .requestMatchers(HttpMethod.GET, APIUrl.RANGER_API + "/**").hasAnyAuthority(UserRole.RANGER.name(),UserRole.SUPERADMIN.name())
