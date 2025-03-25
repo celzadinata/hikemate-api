@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:alpine
+    container_name: hikemate-postgres
+    environment:
+      POSTGRES_DB: hikemate_db
+      POSTGRES_PASSWORD: 123
+    networks:
+      - hikemate-network
+    volumes:
+      - hikemate-volume:/var/lib/postgresql/data
+  backend:
+    image: hikemate-springboot
+    container_name: hikemate-apis
+    environment:
+      DB_HOST: hikemate-postgres
+      DB_NAME: hikemate_db
+      DB_PASSWORD: 123
+      MIDTRANS_API_KEY: U0ItTWlkLXNlcnZlci05Xy1oOElZUkp4ay1fZG05MDlzZ09IbHk6
+      MIDTRANS_BASE_URL: https://app.sandbox.midtrans.com/snap/v1/transactions
+      MIDTRANS_FETCH_URL: https://api.sandbox.midtrans.com/v2/
+      CLOUDINARY_URL: cloudinary://957253723431478:CIHMfAYYT4cOiU7s1hc8azVC82k@dxcnouiqy
+    ports:
+      - "8085:8080"
+    networks:
+      - hikemate-network
+    depends_on:
+      - db
+
+networks:
+  hikemate-network:
+
+volumes:
+  hikemate-volume:

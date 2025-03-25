@@ -33,18 +33,17 @@ import static org.mockito.Mockito.when;
 class MountainRouteServiceImplTest {
 
     @Mock
-    private MountainRouteRepository mockMountainRouteRepository;
+    private MountainRouteRepository mountainRouteRepository;
     @Mock
-    private MountainRepository mockMountainRepository;
+    private MountainRepository mountainRepository;
     @Mock
-    private RouteRepository mockRouteRepository;
+    private RouteRepository routeRepository;
 
     @InjectMocks
-    private MountainRouteServiceImpl mountainRouteServiceImplUnderTest;
+    private MountainRouteServiceImpl mountainRouteService;
 
     @Test
     void testCreate() {
-        // Setup
         final MountainRouteRequest request = MountainRouteRequest.builder()
                 .mountainId("mountainId")
                 .routeId("routeId")
@@ -53,76 +52,65 @@ class MountainRouteServiceImplTest {
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
-        when(mockRouteRepository.findById("routeId")).thenReturn(Optional.of(Route.builder().build()));
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
+        when(routeRepository.findById("routeId")).thenReturn(Optional.of(Route.builder().build()));
 
-        // Configure MountainRouteRepository.save(...).
         final MountainRoute mountainRoute = MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build();
-        when(mockMountainRouteRepository.save(MountainRoute.builder()
+        when(mountainRouteRepository.save(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build())).thenReturn(mountainRoute);
 
-        // Run the test
-        final MountainRoute result = mountainRouteServiceImplUnderTest.create(request);
+        final MountainRoute result = mountainRouteService.create(request);
 
-        // Verify the results
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
     void testCreate_MountainRepositoryReturnsAbsent() {
-        // Setup
         final MountainRouteRequest request = MountainRouteRequest.builder()
                 .mountainId("mountainId")
                 .routeId("routeId")
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.empty());
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.empty());
 
-        // Run the test
-        assertThatThrownBy(() -> mountainRouteServiceImplUnderTest.create(request))
+        assertThatThrownBy(() -> mountainRouteService.create(request))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void testCreate_RouteRepositoryReturnsAbsent() {
-        // Setup
         final MountainRouteRequest request = MountainRouteRequest.builder()
                 .mountainId("mountainId")
                 .routeId("routeId")
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
-        when(mockRouteRepository.findById("routeId")).thenReturn(Optional.empty());
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
+        when(routeRepository.findById("routeId")).thenReturn(Optional.empty());
 
-        // Run the test
-        assertThatThrownBy(() -> mountainRouteServiceImplUnderTest.create(request))
+        assertThatThrownBy(() -> mountainRouteService.create(request))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void testDelete() {
-        // Setup
         final MountainRoute expectedResult = MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build();
 
-        // Configure MountainRouteRepository.findById(...).
         final Optional<MountainRoute> mountainRoute = Optional.of(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build());
-        when(mockMountainRouteRepository.findById("id")).thenReturn(mountainRoute);
+        when(mountainRouteRepository.findById("id")).thenReturn(mountainRoute);
 
-        // Run the test
-        final MountainRoute result = mountainRouteServiceImplUnderTest.delete("id");
+        final MountainRoute result = mountainRouteService.delete("id");
 
-        // Verify the results
         assertThat(result).isEqualTo(expectedResult);
-        verify(mockMountainRouteRepository).delete(MountainRoute.builder()
+        verify(mountainRouteRepository).delete(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build());
@@ -130,164 +118,137 @@ class MountainRouteServiceImplTest {
 
     @Test
     void testDelete_MountainRouteRepositoryFindByIdReturnsAbsent() {
-        // Setup
-        when(mockMountainRouteRepository.findById("id")).thenReturn(Optional.empty());
+        when(mountainRouteRepository.findById("id")).thenReturn(Optional.empty());
 
-        // Run the test
-        assertThatThrownBy(() -> mountainRouteServiceImplUnderTest.delete("id"))
+        assertThatThrownBy(() -> mountainRouteService.delete("id"))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void testGetAllByMountain() {
-        // Setup
         final Mountain mountain = Mountain.builder().build();
         final List<MountainRoute> expectedResult = List.of(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build());
 
-        // Configure MountainRouteRepository.findMountainRouteByMountain(...).
         final List<MountainRoute> mountainRouteList = List.of(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build());
-        when(mockMountainRouteRepository.findMountainRouteByMountain(Mountain.builder().build()))
+        when(mountainRouteRepository.findMountainRouteByMountain(Mountain.builder().build()))
                 .thenReturn(mountainRouteList);
 
-        // Run the test
-        final List<MountainRoute> result = mountainRouteServiceImplUnderTest.getAllByMountain(mountain);
+        final List<MountainRoute> result = mountainRouteService.getAllByMountain(mountain);
 
-        // Verify the results
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
     void testGetAllByMountain_MountainRouteRepositoryReturnsNoItems() {
-        // Setup
         final Mountain mountain = Mountain.builder().build();
-        when(mockMountainRouteRepository.findMountainRouteByMountain(Mountain.builder().build()))
+        when(mountainRouteRepository.findMountainRouteByMountain(Mountain.builder().build()))
                 .thenReturn(Collections.emptyList());
 
-        // Run the test
-        final List<MountainRoute> result = mountainRouteServiceImplUnderTest.getAllByMountain(mountain);
+        final List<MountainRoute> result = mountainRouteService.getAllByMountain(mountain);
 
-        // Verify the results
         assertThat(result).isEqualTo(Collections.emptyList());
     }
 
     @Test
     void testGetById() {
-        // Setup
         final MountainRoute expectedResult = MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build();
 
-        // Configure MountainRouteRepository.findById(...).
         final Optional<MountainRoute> mountainRoute = Optional.of(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build());
-        when(mockMountainRouteRepository.findById("id")).thenReturn(mountainRoute);
+        when(mountainRouteRepository.findById("id")).thenReturn(mountainRoute);
 
-        // Run the test
-        final MountainRoute result = mountainRouteServiceImplUnderTest.getById("id");
+        final MountainRoute result = mountainRouteService.getById("id");
 
-        // Verify the results
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
     void testGetById_MountainRouteRepositoryReturnsAbsent() {
-        // Setup
-        when(mockMountainRouteRepository.findById("id")).thenReturn(Optional.empty());
+        when(mountainRouteRepository.findById("id")).thenReturn(Optional.empty());
 
-        // Run the test
-        assertThatThrownBy(() -> mountainRouteServiceImplUnderTest.getById("id"))
+        assertThatThrownBy(() -> mountainRouteService.getById("id"))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void testGetAll() {
-        // Setup
         final SearchRequest searchRequest = SearchRequest.builder()
                 .page(0)
                 .size(0)
                 .direction("direction")
                 .sortBy("sortBy")
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
-        when(mockRouteRepository.findById("routeId")).thenReturn(Optional.of(Route.builder().build()));
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
+        when(routeRepository.findById("routeId")).thenReturn(Optional.of(Route.builder().build()));
 
-        // Configure MountainRouteRepository.findAll(...).
         final Page<MountainRoute> mountainRoutes = new PageImpl<>(List.of(MountainRoute.builder()
                 .mountain(Mountain.builder().build())
                 .route(Route.builder().build())
                 .build()));
-        when(mockMountainRouteRepository.findAll(any(MountainRouteSpecification.class),
+        when(mountainRouteRepository.findAll(any(MountainRouteSpecification.class),
                 any(Pageable.class))).thenReturn(mountainRoutes);
 
-        // Run the test
-        final Page<MountainRoute> result = mountainRouteServiceImplUnderTest.getAll("mountainId", "routeId",
+        final Page<MountainRoute> result = mountainRouteService.getAll("mountainId", "routeId",
                 searchRequest);
 
-        // Verify the results
     }
 
     @Test
     void testGetAll_MountainRepositoryReturnsAbsent() {
-        // Setup
         final SearchRequest searchRequest = SearchRequest.builder()
                 .page(0)
                 .size(0)
                 .direction("direction")
                 .sortBy("sortBy")
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.empty());
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.empty());
 
-        // Run the test
         assertThatThrownBy(
-                () -> mountainRouteServiceImplUnderTest.getAll("mountainId", "routeId", searchRequest))
+                () -> mountainRouteService.getAll("mountainId", "routeId", searchRequest))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void testGetAll_RouteRepositoryReturnsAbsent() {
-        // Setup
         final SearchRequest searchRequest = SearchRequest.builder()
                 .page(0)
                 .size(0)
                 .direction("direction")
                 .sortBy("sortBy")
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
-        when(mockRouteRepository.findById("routeId")).thenReturn(Optional.empty());
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
+        when(routeRepository.findById("routeId")).thenReturn(Optional.empty());
 
-        // Run the test
         assertThatThrownBy(
-                () -> mountainRouteServiceImplUnderTest.getAll("mountainId", "routeId", searchRequest))
+                () -> mountainRouteService.getAll("mountainId", "routeId", searchRequest))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
     void testGetAll_MountainRouteRepositoryReturnsNoItems() {
-        // Setup
         final SearchRequest searchRequest = SearchRequest.builder()
                 .page(0)
                 .size(0)
                 .direction("direction")
                 .sortBy("sortBy")
                 .build();
-        when(mockMountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
-        when(mockRouteRepository.findById("routeId")).thenReturn(Optional.of(Route.builder().build()));
-        when(mockMountainRouteRepository.findAll(any(MountainRouteSpecification.class),
+        when(mountainRepository.findById("mountainId")).thenReturn(Optional.of(Mountain.builder().build()));
+        when(routeRepository.findById("routeId")).thenReturn(Optional.of(Route.builder().build()));
+        when(mountainRouteRepository.findAll(any(MountainRouteSpecification.class),
                 any(Pageable.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
 
-        // Run the test
-        final Page<MountainRoute> result = mountainRouteServiceImplUnderTest.getAll("mountainId", "routeId",
+        final Page<MountainRoute> result = mountainRouteService.getAll("mountainId", "routeId",
                 searchRequest);
-
-        // Verify the results
     }
 }

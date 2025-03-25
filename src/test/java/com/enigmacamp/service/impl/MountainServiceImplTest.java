@@ -43,35 +43,35 @@ import static org.mockito.Mockito.when;
 class MountainServiceImplTest {
 
     @Mock
-    private MountainRepository mockMountainRepository;
+    private MountainRepository mountainRepository;
     @Mock
-    private MountainMapper mockMountainMapper;
+    private MountainMapper mountainMapper;
     @Mock
-    private RangerMapper mockRangerMapper;
+    private RangerMapper rangerMapper;
     @Mock
-    private MountainRouteMapper mockMountainRouteMapper;
+    private MountainRouteMapper mountainRouteMapper;
     @Mock
-    private AuthService mockAuthService;
+    private AuthService authService;
     @Mock
-    private RangerService mockRangerService;
+    private RangerService rangerService;
     @Mock
-    private ImageService mockImageService;
+    private ImageService imageService;
     @Mock
-    private RouteService mockRouteService;
+    private RouteService routeService;
     @Mock
-    private UserService mockUserService;
+    private UserService userService;
     @Mock
-    private MountainRouteService mockMountainRouteService;
+    private MountainRouteService mountainRouteService;
     @Mock
-    private MountainValidation mockMountainValidation;
+    private MountainValidation mountainValidation;
 
-    private MountainServiceImpl mountainServiceImplUnderTest;
+    private MountainServiceImpl mountainService;
 
     @BeforeEach
     void setUp() {
-        mountainServiceImplUnderTest = new MountainServiceImpl(mockMountainRepository, mockMountainMapper,
-                mockRangerMapper, mockMountainRouteMapper, mockAuthService, mockRangerService, mockImageService,
-                mockRouteService, mockUserService, mockMountainRouteService, mockMountainValidation);
+        mountainService = new MountainServiceImpl(mountainRepository, mountainMapper,
+                rangerMapper, mountainRouteMapper, authService, rangerService, imageService,
+                routeService, userService, mountainRouteService, mountainValidation);
     }
 
     @Test
@@ -101,7 +101,6 @@ class MountainServiceImplTest {
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
 
-        // Configure MountainMapper.requestToEntity(...).
         final Mountain mountain = Mountain.builder()
                 .name("name")
                 .location("location")
@@ -121,7 +120,7 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build();
-        when(mockMountainMapper.requestToEntity(MountainRequest.builder()
+        when(mountainMapper.requestToEntity(MountainRequest.builder()
                 .id("id")
                 .name("name")
                 .location("location")
@@ -142,14 +141,12 @@ class MountainServiceImplTest {
                         .build()))
                 .build())).thenReturn(mountain);
 
-        // Configure ImageService.create(...).
         final Image image = Image.builder()
                 .id("id")
                 .path("path")
                 .build();
-        when(mockImageService.create(any(MultipartFile.class), eq(Tables.MOUNTAINS))).thenReturn(image);
+        when(imageService.create(any(MultipartFile.class), eq(Tables.MOUNTAINS))).thenReturn(image);
 
-        // Configure MountainRepository.save(...).
         final Mountain mountain1 = Mountain.builder()
                 .name("name")
                 .location("location")
@@ -169,7 +166,7 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build();
-        when(mockMountainRepository.save(Mountain.builder()
+        when(mountainRepository.save(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -189,17 +186,15 @@ class MountainServiceImplTest {
                         .build()))
                 .build())).thenReturn(mountain1);
 
-        // Configure AuthService.registerRanger(...).
         final RegisterResponse registerResponse = RegisterResponse.builder()
                 .userId("userId")
                 .build();
-        when(mockAuthService.registerRanger(NewUserRequest.builder()
+        when(authService.registerRanger(NewUserRequest.builder()
                 .userId("userId")
                 .build())).thenReturn(registerResponse);
 
-        when(mockUserService.loadUserById("userId")).thenReturn(UserAccount.builder().build());
+        when(userService.loadUserById("userId")).thenReturn(UserAccount.builder().build());
 
-        // Configure RangerService.getByUserAccountEntity(...).
         final Ranger ranger = Ranger.builder()
                 .mountain(Mountain.builder()
                         .name("name")
@@ -221,13 +216,13 @@ class MountainServiceImplTest {
                                 .build()))
                         .build())
                 .build();
-        when(mockRangerService.getByUserAccountEntity(UserAccount.builder().build())).thenReturn(ranger);
+        when(rangerService.getByUserAccountEntity(UserAccount.builder().build())).thenReturn(ranger);
 
         final MountainResponse mountainResponse = MountainResponse.builder()
                 .mountainRoutes(List.of(MountainRouteResponse.builder().build()))
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
-        when(mockMountainMapper.entityToResponse(Mountain.builder()
+        when(mountainMapper.entityToResponse(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -247,7 +242,7 @@ class MountainServiceImplTest {
                         .build()))
                 .build())).thenReturn(mountainResponse);
 
-        when(mockRangerMapper.entityToResponse(Ranger.builder()
+        when(rangerMapper.entityToResponse(Ranger.builder()
                 .mountain(Mountain.builder()
                         .name("name")
                         .location("location")
@@ -268,14 +263,14 @@ class MountainServiceImplTest {
                                 .build()))
                         .build())
                 .build())).thenReturn(RangerResponse.builder().build());
-        when(mockRouteService.getByIdEntity("id")).thenReturn(Route.builder().build());
-        when(mockMountainRouteService.create(MountainRouteRequest.builder().build()))
+        when(routeService.getByIdEntity("id")).thenReturn(Route.builder().build());
+        when(mountainRouteService.create(MountainRouteRequest.builder().build()))
                 .thenReturn(MountainRoute.builder().build());
-        when(mockMountainRouteMapper.entityToResponse(MountainRoute.builder().build()))
+        when(mountainRouteMapper.entityToResponse(MountainRoute.builder().build()))
                 .thenReturn(MountainRouteResponse.builder().build());
-        final MountainResponse result = mountainServiceImplUnderTest.create(request);
+        final MountainResponse result = mountainService.create(request);
         assertThat(result).isEqualTo(expectedResult);
-        verify(mockMountainValidation).validateCreateRequest(MountainRequest.builder()
+        verify(mountainValidation).validateCreateRequest(MountainRequest.builder()
                 .id("id")
                 .name("name")
                 .location("location")
@@ -295,8 +290,8 @@ class MountainServiceImplTest {
                         .id("id")
                         .build()))
                 .build());
-        verify(mockImageService).removeImageFromCloudinary("path");
-        verify(mockImageService).deleteById("id");
+        verify(imageService).removeImageFromCloudinary("path");
+        verify(imageService).deleteById("id");
     }
 
     @Test
@@ -308,7 +303,6 @@ class MountainServiceImplTest {
                 .sortBy("sortBy")
                 .build();
 
-        // Configure MountainRepository.findAll(...).
         final Page<Mountain> mountains = new PageImpl<>(List.of(Mountain.builder()
                 .name("name")
                 .location("location")
@@ -328,10 +322,10 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build()));
-        when(mockMountainRepository.findAll(any(MountainSpecification.class), any(Pageable.class)))
+        when(mountainRepository.findAll(any(MountainSpecification.class), any(Pageable.class)))
                 .thenReturn(mountains);
 
-        when(mockRangerService.getByMountainId(Mountain.builder()
+        when(rangerService.getByMountainId(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -350,7 +344,7 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(RangerResponse.builder().build());
-        when(mockMountainRouteService.getAllByMountain(Mountain.builder()
+        when(mountainRouteService.getAllByMountain(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -369,14 +363,14 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(List.of(MountainRoute.builder().build()));
-        when(mockMountainRouteMapper.entityToResponse(MountainRoute.builder().build()))
+        when(mountainRouteMapper.entityToResponse(MountainRoute.builder().build()))
                 .thenReturn(MountainRouteResponse.builder().build());
 
         final MountainResponse mountainResponse = MountainResponse.builder()
                 .mountainRoutes(List.of(MountainRouteResponse.builder().build()))
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
-        when(mockMountainMapper.entityToResponse(Mountain.builder()
+        when(mountainMapper.entityToResponse(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -395,13 +389,13 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(mountainResponse);
-        final Page<MountainResponse> result = mountainServiceImplUnderTest.getAll("name", "startPrice", "endPrice",
+        final Page<MountainResponse> result = mountainService.getAll("name", "startPrice", "endPrice",
                 "status", "location", searchRequest);
     }
 
 
     @Test
-    void testGetAll_MountainRouteServiceReturnsNoItems() {
+    void testGetAllMountainRouteServiceReturnsNoItems() {
         final SearchRequest searchRequest = SearchRequest.builder()
                 .page(1)
                 .size(10)
@@ -409,7 +403,6 @@ class MountainServiceImplTest {
                 .sortBy("sortBy")
                 .build();
 
-        // Configure MountainRepository.findAll(...).
         final Page<Mountain> mountains = new PageImpl<>(List.of(Mountain.builder()
                 .name("name")
                 .location("location")
@@ -429,10 +422,10 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build()));
-        when(mockMountainRepository.findAll(any(MountainSpecification.class), any(Pageable.class)))
+        when(mountainRepository.findAll(any(MountainSpecification.class), any(Pageable.class)))
                 .thenReturn(mountains);
 
-        when(mockRangerService.getByMountainId(Mountain.builder()
+        when(rangerService.getByMountainId(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -451,7 +444,7 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(RangerResponse.builder().build());
-        when(mockMountainRouteService.getAllByMountain(Mountain.builder()
+        when(mountainRouteService.getAllByMountain(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -475,7 +468,7 @@ class MountainServiceImplTest {
                 .mountainRoutes(List.of(MountainRouteResponse.builder().build()))
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
-        when(mockMountainMapper.entityToResponse(Mountain.builder()
+        when(mountainMapper.entityToResponse(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -494,7 +487,7 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(mountainResponse);
-        final Page<MountainResponse> result = mountainServiceImplUnderTest.getAll("name", "startPrice", "endPrice",
+        final Page<MountainResponse> result = mountainService.getAll("name", "startPrice", "endPrice",
                 "status", "location", searchRequest);
     }
 
@@ -524,9 +517,9 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build());
-        when(mockMountainRepository.findById("id")).thenReturn(mountain);
+        when(mountainRepository.findById("id")).thenReturn(mountain);
 
-        when(mockMountainRouteService.getAllByMountain(Mountain.builder()
+        when(mountainRouteService.getAllByMountain(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -545,14 +538,14 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(List.of(MountainRoute.builder().build()));
-        when(mockMountainRouteMapper.entityToResponse(MountainRoute.builder().build()))
+        when(mountainRouteMapper.entityToResponse(MountainRoute.builder().build()))
                 .thenReturn(MountainRouteResponse.builder().build());
 
         final MountainResponse mountainResponse = MountainResponse.builder()
                 .mountainRoutes(List.of(MountainRouteResponse.builder().build()))
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
-        when(mockMountainMapper.entityToResponse(Mountain.builder()
+        when(mountainMapper.entityToResponse(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -571,14 +564,14 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(mountainResponse);
-        final MountainResponse result = mountainServiceImplUnderTest.getById("id");
+        final MountainResponse result = mountainService.getById("id");
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    void testGetById_MountainRepositoryReturnsAbsent() {
-        when(mockMountainRepository.findById("id")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> mountainServiceImplUnderTest.getById("id"))
+    void testGetByIdMountainRepositoryReturnsAbsent() {
+        when(mountainRepository.findById("id")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> mountainService.getById("id"))
                 .isInstanceOf(ResponseStatusException.class);
     }
 
@@ -628,7 +621,7 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build());
-        when(mockMountainRepository.findById("id")).thenReturn(mountain);
+        when(mountainRepository.findById("id")).thenReturn(mountain);
 
         // Configure RangerService.getByMountainIdEntity(...).
         final Ranger ranger = Ranger.builder()
@@ -652,7 +645,7 @@ class MountainServiceImplTest {
                                 .build()))
                         .build())
                 .build();
-        when(mockRangerService.getByMountainIdEntity(Mountain.builder()
+        when(rangerService.getByMountainIdEntity(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -694,19 +687,19 @@ class MountainServiceImplTest {
                                 .build()))
                         .build())
                 .build();
-        when(mockRangerService.getByIdEntity("userId")).thenReturn(ranger1);
+        when(rangerService.getByIdEntity("userId")).thenReturn(ranger1);
 
         final Image image = Image.builder()
                 .id("id")
                 .path("path")
                 .build();
-        when(mockImageService.create(any(MultipartFile.class), eq(Tables.MOUNTAINS))).thenReturn(image);
+        when(imageService.create(any(MultipartFile.class), eq(Tables.MOUNTAINS))).thenReturn(image);
 
         final MountainResponse mountainResponse = MountainResponse.builder()
                 .mountainRoutes(List.of(MountainRouteResponse.builder().build()))
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
-        when(mockMountainMapper.entityToResponse(Mountain.builder()
+        when(mountainMapper.entityToResponse(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -725,9 +718,9 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(mountainResponse);
-        final MountainResponse result = mountainServiceImplUnderTest.update(request);
+        final MountainResponse result = mountainService.update(request);
         assertThat(result).isEqualTo(expectedResult);
-        verify(mockMountainValidation).validateUpdateRequest(MountainRequest.builder()
+        verify(mountainValidation).validateUpdateRequest(MountainRequest.builder()
                 .id("id")
                 .name("name")
                 .location("location")
@@ -747,9 +740,9 @@ class MountainServiceImplTest {
                         .id("id")
                         .build()))
                 .build());
-        verify(mockImageService).removeImageFromCloudinary("path");
-        verify(mockImageService).deleteById("id");
-        verify(mockMountainRepository).saveAndFlush(Mountain.builder()
+        verify(imageService).removeImageFromCloudinary("path");
+        verify(imageService).deleteById("id");
+        verify(mountainRepository).saveAndFlush(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -796,13 +789,13 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build());
-        when(mockMountainRepository.findById("id")).thenReturn(mountain);
+        when(mountainRepository.findById("id")).thenReturn(mountain);
 
         final MountainResponse mountainResponse = MountainResponse.builder()
                 .mountainRoutes(List.of(MountainRouteResponse.builder().build()))
                 .rangerResponse(RangerResponse.builder().build())
                 .build();
-        when(mockMountainMapper.entityToResponse(Mountain.builder()
+        when(mountainMapper.entityToResponse(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -821,9 +814,9 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build())).thenReturn(mountainResponse);
-        final MountainResponse result = mountainServiceImplUnderTest.delete("id");
+        final MountainResponse result = mountainService.delete("id");
         assertThat(result).isEqualTo(expectedResult);
-        verify(mockMountainRepository).saveAndFlush(Mountain.builder()
+        verify(mountainRepository).saveAndFlush(Mountain.builder()
                 .name("name")
                 .location("location")
                 .status(MountainStatus.DANGEROUS)
@@ -845,9 +838,9 @@ class MountainServiceImplTest {
     }
 
     @Test
-    void testDelete_MountainRepositoryFindByIdReturnsAbsent() {
-        when(mockMountainRepository.findById("id")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> mountainServiceImplUnderTest.delete("id")).isInstanceOf(ResponseStatusException.class);
+    void testDeleteMountainRepositoryFindByIdReturnsAbsent() {
+        when(mountainRepository.findById("id")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> mountainService.delete("id")).isInstanceOf(ResponseStatusException.class);
     }
 
     @Test
@@ -891,15 +884,15 @@ class MountainServiceImplTest {
                         .path("path")
                         .build()))
                 .build());
-        when(mockMountainRepository.findById("id")).thenReturn(mountain);
-        final Mountain result = mountainServiceImplUnderTest.getByIdEntity("id");
+        when(mountainRepository.findById("id")).thenReturn(mountain);
+        final Mountain result = mountainService.getByIdEntity("id");
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
-    void testGetByIdEntity_MountainRepositoryReturnsAbsent() {
-        when(mockMountainRepository.findById("id")).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> mountainServiceImplUnderTest.getByIdEntity("id"))
+    void testGetByIdEntityMountainRepositoryReturnsAbsent() {
+        when(mountainRepository.findById("id")).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> mountainService.getByIdEntity("id"))
                 .isInstanceOf(ResponseStatusException.class);
     }
 }
