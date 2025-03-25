@@ -16,6 +16,7 @@ import com.enigmacamp.model.entity.UserAccount;
 import com.enigmacamp.service.*;
 import com.enigmacamp.utils.mapper.HikerMapper;
 import com.enigmacamp.utils.mapper.ImageMapper;
+import com.enigmacamp.utils.validate_request.AuthValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,17 +55,15 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private HikerMapper hikerMapper;
-
-    @Autowired
     private ImageMapper imageMapper;
+
+    @Autowired
+    private AuthValidation authValidation;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerHiker(NewUserRequest request) {
+        authValidation.validateCreateRequest(request);
         String password = passwordEncoder.encode(request.getPassword());
         Role hikerRole = roleService.getOrSaveRole(UserRole.HIKER);
 
@@ -83,6 +82,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerRanger(NewUserRequest request) {
+        authValidation.validateCreateRequest(request);
         String password = passwordEncoder.encode(request.getPassword());
         Role hikerRole = roleService.getOrSaveRole(UserRole.RANGER);
 
@@ -107,28 +107,11 @@ public class AuthServiceImpl implements AuthService {
 
         Authentication authenticate = authenticationManager.authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-
-
         UserAccount userAccount = (UserAccount) authenticate.getPrincipal();
-        String role = userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList().get(0);
-        String userLoggedInId = "";
-
-        if (Objects.equals(role, "RANGER")) {
-            userLoggedInId =  rangerService.getByUserAccountEntity(userAccount).getId();
-        } else if (Objects.equals(role, "HIKER")) {
-
-            userLoggedInId = hikerService.getByUserAccountEntity(userAccount).getId();
-        } else {
-            userLoggedInId = userService.loadUserById(userAccount.getId()).getId();
-        }
 
         String token = jwtService.generateToken(userAccount);
         return LoginResponse.builder()
-                .userAccountId(userAccount.getId())
-                .name(userAccount.getUsername())
                 .token(token)
-                .userLoggedInId(userLoggedInId)
-                .role(userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                 .build();
     }
 
@@ -146,6 +129,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(request.getEmail())
                 .phoneNumber(request.getPhone())
                 .ktpImage(request.getImage())
+                .profilePicture(request.getProfilePicture())
                 .userAccount(account)
                 .build();
     }

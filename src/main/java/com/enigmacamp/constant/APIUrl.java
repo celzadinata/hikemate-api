@@ -9,4 +9,7 @@ public class APIUrl {
     public static final String AUTH = VERSION_API + "/auth";
     public static final String IMAGE_API = VERSION_API + "/images";
     public static final String PAYMENT_API = VERSION_API + "/payments";
+    public static final String ROUTE_API = VERSION_API + "/routes";
+    public static final String MOUNTAIN_ROUTE_API = VERSION_API + "/mountain-routes";
+    public static final String GEOAPIFY_API = VERSION_API + "/get-location";
 }

@@ -32,12 +32,14 @@ public class AuthController {
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registerHiker(
                 @RequestPart(name = "hiker") String request,
-                @RequestPart(name = "image", required = false)MultipartFile image
+                @RequestPart(name = "ktp", required = false)MultipartFile ktp,
+                @RequestPart(name = "profile_picture", required = false)MultipartFile profilePicture
     ){
         try {
             NewUserRequest newUserRequest = objectMapper.readValue(request, new TypeReference<>() {
             });
-            newUserRequest.setImage(image);
+            newUserRequest.setImage(ktp);
+            newUserRequest.setProfilePicture(profilePicture);
             RegisterResponse registerResponse = authService.registerHiker(newUserRequest);
             CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                     .status(HttpStatus.CREATED.value())

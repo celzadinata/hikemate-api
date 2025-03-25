@@ -36,6 +36,10 @@ public class Hiker extends DateUtils {
     private Image ktp;
 
     @OneToOne
+    @JoinColumn(name = "profile_picture_id", nullable = true, unique = true)
+    private Image profilePicture;
+
+    @OneToOne
     @JoinColumn(name = "user_account_id", unique = true, nullable = true)
     private UserAccount userAccount;
 }

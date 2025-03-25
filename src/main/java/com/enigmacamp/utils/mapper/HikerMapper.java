@@ -20,7 +20,8 @@ public class HikerMapper implements EntityMapper<Hiker, HikerRequest, HikerRespo
                 .name(entity.getName())
                 .phoneNumber(entity.getPhoneNumber())
                 .email(entity.getEmail())
-                .ktp(imageMapper.entityToResponse(entity.getKtp()))
+                .ktpUrl(entity.getKtp() != null? entity.getKtp().getPath() : null)
+                .profilePictureUrl(entity.getProfilePicture() != null? entity.getProfilePicture().getPath() : null)
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .deletedAt(entity.getDeletedAt())
@@ -47,7 +48,6 @@ public class HikerMapper implements EntityMapper<Hiker, HikerRequest, HikerRespo
                 .name(response.getName())
                 .email(response.getEmail())
                 .phoneNumber(response.getPhoneNumber())
-                .ktp(imageMapper.responseToEntity(response.getKtp()))
                 .build();
     }
 }

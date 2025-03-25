@@ -10,7 +10,8 @@ import com.enigmacamp.repository.RangerRepository;
 import com.enigmacamp.service.RangerService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.RangerMapper;
-import com.enigmacamp.utils.mapper.SortingUtil;
+import com.enigmacamp.utils.SortingUtil;
+import com.enigmacamp.utils.validate_request.AuthValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,9 +32,13 @@ public class RangerServiceImpl implements RangerService {
     @Autowired
     private RangerMapper rangerMapper;
 
+    @Autowired
+    private AuthValidation authValidation;
+
+    private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+
     @Override
     public RangerResponse create(RangerRequest request) {
-        Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Ranger newRanger = rangerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newRanger.setUserAccount(request.getUserAccount());
@@ -82,27 +87,32 @@ public class RangerServiceImpl implements RangerService {
                 .phoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : existingRanger.getPhoneNumber())
                 .assignedAt(existingRanger.getAssignedAt())
                 .userAccount(request.getUserAccount() != null ? request.getUserAccount() : existingRanger.getUserAccount())
-                .assignedAt(new Timestamp(new Date().getTime()))
                 .build();
         return rangerMapper.entityToResponse(rangerRepository.save(updatedRanger));
     }
 
     @Override
-    public void delete(String id) {
-        Ranger ranger = rangerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ranger not found", new RuntimeException("Ranger not found")));
-        rangerRepository.delete(ranger);
+    public RangerResponse delete(String id) {
+        Ranger ranger = findByIdOrThrowNotFound(id);
+        ranger.setDeletedAt(currentTimeStamp);
+        rangerRepository.saveAndFlush(ranger);
+        return rangerMapper.entityToResponse(ranger);
     }
 
     private Specification<Ranger> hitAllSpecification(String request, String fieldName) {
+        Specification<Ranger> specification = (root, query, cb) -> cb.isNull(root.get("deletedAt"));
+
         if (request != null && !request.isEmpty()) {
             if ("name".equals(fieldName)) {
-                return (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                Specification<Ranger> nameSpecification = (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                specification = specification.and(nameSpecification);
             } else {
-                return (root, query, cb) -> cb.equal(root.get("code"), request);
+                Specification<Ranger> codeSpecification = (root, query, cb) -> cb.equal(root.get("code"), request);
+                specification = specification.and(codeSpecification);
             }
         }
-        return null;
+
+        return specification;
     }
 
     @Override

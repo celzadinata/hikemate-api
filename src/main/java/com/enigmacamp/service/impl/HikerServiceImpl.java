@@ -12,14 +12,17 @@ import com.enigmacamp.service.HikerService;
 import com.enigmacamp.service.ImageService;
 import com.enigmacamp.utils.exception.ResourceNotFoundException;
 import com.enigmacamp.utils.mapper.HikerMapper;
-import com.enigmacamp.utils.mapper.SortingUtil;
+import com.enigmacamp.utils.SortingUtil;
+import com.enigmacamp.utils.validate_request.HikerValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -36,17 +39,23 @@ public class HikerServiceImpl implements HikerService {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private HikerValidation hikerValidation;
+
+    private final Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse create(HikerRequest request) {
-        Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Hiker newHiker = hikerMapper.requestToEntity(request);
         if (request.getUserAccount() != null) {
             newHiker.setUserAccount(request.getUserAccount());
         }
-        if (request.getKtpImage() != null){
-            Image ktp = imageService.create(request.getKtpImage(), Tables.HIKER);
-            newHiker.setKtp(ktp);
-        }
+        handleImages(request, newHiker, "create");
+
         newHiker.setCreatedAt(currentTimeStamp);
         newHiker.setUpdatedAt(currentTimeStamp);
 
@@ -80,34 +89,40 @@ public class HikerServiceImpl implements HikerService {
         return hikerMapper.entityToResponse(hiker);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public HikerResponse updateHiker(HikerRequest request) {
-        Hiker existingHiker = findByIdOrThrowNotFound(request.getUserAccount().getId());
-        Hiker updateHiker = Hiker.builder()
-                .id(existingHiker.getId())
-                .name(request.getName() != null ? request.getName() : existingHiker.getName())
-                .phoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : existingHiker.getPhoneNumber())
-                .userAccount(existingHiker.getUserAccount())
-                .build();
-        return hikerMapper.entityToResponse(hikerRepository.save(updateHiker));
+        hikerValidation.validateUpdateRequest(request);
+        Hiker existingHiker = findByIdOrThrowNotFound(request.getId());
+        updateHikerFields(request, existingHiker);
+        handleImages(request, existingHiker, "update");
+
+        hikerRepository.saveAndFlush(existingHiker);
+        return hikerMapper.entityToResponse(existingHiker);
     }
 
     @Override
-    public void delete(String id) {
-        Hiker hiker = hikerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Hiker not found", new RuntimeException("Hiker not found")));
-        hikerRepository.delete(hiker);
+    public HikerResponse delete(String id) {
+        Hiker hiker = findByIdOrThrowNotFound(id);
+        hiker.setDeletedAt(currentTimeStamp);
+        hikerRepository.saveAndFlush(hiker);
+        return hikerMapper.entityToResponse(hiker);
     }
 
     private Specification<Hiker> hitAllSpecification(String request, String fieldName) {
+        Specification<Hiker> specification = (root, query, cb) -> cb.isNull(root.get("deletedAt"));
+
         if (request != null && !request.isEmpty()) {
             if ("name".equals(fieldName)) {
-                return (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                Specification<Hiker> nameSpecification = (root, query, cb) -> cb.like(root.get("name"), "%" + request + "%");
+                specification = specification.and(nameSpecification);
             } else {
-                return (root, query, cb) -> cb.equal(root.get("code"), request);
+                Specification<Hiker> codeSpecification = (root, query, cb) -> cb.equal(root.get("code"), request);
+                specification = specification.and(codeSpecification);
             }
         }
-        return null;
+
+        return specification;
     }
 
     @Override
@@ -117,7 +132,7 @@ public class HikerServiceImpl implements HikerService {
 
     @Override
     public Hiker getByUserAccountEntity(UserAccount userAccount) {
-        return hikerRepository.findHikerByUserAccount(userAccount).orElseThrow(() -> new RuntimeException("Hiker Not Found!"));
+        return hikerRepository.findHikerByUserAccountAndDeletedAtIsNull(userAccount).orElseThrow(() -> new RuntimeException("Hiker Not Found!"));
     }
 
     private Hiker findByIdOrThrowNotFound(String id){
@@ -125,4 +140,35 @@ public class HikerServiceImpl implements HikerService {
                 () -> new ResourceNotFoundException("Hiker Not Found", new RuntimeException("Hiker ga ketemu"))
         );
     }
+
+    private void updateHikerFields(HikerRequest request, Hiker hiker) {
+        hiker.setName(request.getName() != null ? request.getName() : hiker.getName());
+        hiker.setPhoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber() : hiker.getPhoneNumber());
+        hiker.setUpdatedAt(currentTimeStamp);
+
+        if (request.getPassword() != null && !request.getPassword().isEmpty() ) {
+            hiker.getUserAccount().setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+    }
+
+    private void handleImages(HikerRequest request, Hiker hiker, String method) {
+        if (request.getKtpImage() != null) {
+            Image oldKtp = hiker.getKtp() != null ? hiker.getKtp() : null;
+            hiker.setKtp(imageService.create(request.getKtpImage(), Tables.HIKER));
+            if (oldKtp != null && method.equals("update")) {
+                imageService.removeImageFromCloudinary(oldKtp.getPath());
+                imageService.deleteById(oldKtp.getId());
+            }
+        }
+
+        if (request.getProfilePicture() != null) {
+            Image oldProfilePicture = hiker.getProfilePicture() != null ? hiker.getProfilePicture() : null;
+            hiker.setProfilePicture(imageService.create(request.getProfilePicture(), Tables.HIKER));
+            if (oldProfilePicture != null && method.equals("update")) {
+                imageService.removeImageFromCloudinary(oldProfilePicture.getPath());
+                imageService.deleteById(oldProfilePicture.getId());
+            }
+        }
+    }
 }
+

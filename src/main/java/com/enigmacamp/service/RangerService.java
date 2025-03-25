@@ -16,7 +16,7 @@ public interface RangerService {
     Page<RangerResponse> getAllRangers(SearchRequest pageable);
     RangerResponse getById(String id);
     RangerResponse updateRanger(RangerRequest request);
-    void delete(String id);
+    RangerResponse delete(String id);
     Ranger getByIdEntity(String id);
     Ranger getByUserAccountEntity(UserAccount userAccount);
     RangerResponse getByMountainId(Mountain mountain);

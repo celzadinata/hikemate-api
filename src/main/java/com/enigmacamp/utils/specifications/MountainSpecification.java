@@ -38,6 +38,8 @@ public class MountainSpecification implements Specification<Mountain> {
             predicates.add(criteriaBuilder.like(root.get("location"), "%" + location + "%"));
         }
 
+        predicates.add(criteriaBuilder.isNull(root.get("deletedAt")));
+
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
 }

@@ -49,7 +49,8 @@ public class TransactionController {
             @RequestParam(name = "status", required = false) String status,
             @RequestParam(name = "ranger_id", required = false) String rangerId,
             @RequestParam(name = "hiker_id", required = false) String hikerId,
-            @RequestParam(name = "mountain_id", required = false) String mountainId
+            @RequestParam(name = "mountain_id", required = false) String mountainId,
+            @RequestParam(name = "hiker_name", required = false) String hikerName
     ){
         SearchRequest searchRequest = SearchRequest.builder()
                 .size(size)
@@ -59,7 +60,7 @@ public class TransactionController {
                 .query(status)
                 .build();
 
-        Page<TransactionResponse> transactionResponses = transactionService.getAll(isUp, isDown, status, rangerId, hikerId, mountainId, searchRequest);
+        Page<TransactionResponse> transactionResponses = transactionService.getAll(isUp, isDown, status, rangerId, hikerId, mountainId, hikerName, searchRequest);
 
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPages(transactionResponses.getTotalPages())

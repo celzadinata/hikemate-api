@@ -1,4 +1,4 @@
-package com.enigmacamp.utils.mapper;
+package com.enigmacamp.utils;
 
 public class SortingUtil {
     public static  <T> String sortByValidation(Class<T> clazz, String sortBy, String defaultSortBy) {

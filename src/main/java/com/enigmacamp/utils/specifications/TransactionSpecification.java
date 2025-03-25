@@ -27,6 +27,7 @@ public class TransactionSpecification implements Specification<Transaction> {
     private final Ranger ranger;
     private final Hiker hiker;
     private final Mountain mountain;
+    private final String hikerName;
 
     @Autowired
     private RangerService rangerService;
@@ -58,6 +59,9 @@ public class TransactionSpecification implements Specification<Transaction> {
         }
         if (mountain != null) {
             predicates.add(criteriaBuilder.equal(root.get("mountain"), mountain));
+        }
+        if (hikerName != null && !hikerName.isEmpty()) {
+            predicates.add(criteriaBuilder.like(root.join("hiker").get("name"), "%" + hikerName + "%"));
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

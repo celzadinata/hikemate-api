@@ -13,8 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -48,8 +50,11 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse create(TransactionRequest request) {
         Timestamp currentTimeStamp = new Timestamp(new Date().getTime());
         Mountain mountain = mountainService.getByIdEntity(request.getMountainId());
-        Ranger ranger = rangerService.getByIdEntity(request.getRangerId());
+        Ranger ranger = rangerService.getByMountainIdEntity(mountain);
         Hiker hiker = hikerService.getByIdEntity(request.getHikerId());
+        if (hiker.getKtp() == null) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "KTP is needed for transaction!");
+        }
         Route route = routeService.getByIdEntity(request.getRouteId());
         Transaction newTransaction = transactionMapper.requestToEntity(request);
         newTransaction.setMountain(mountain);
@@ -73,12 +78,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, String rangerId, String hikerId, String mountainId, SearchRequest searchRequest) {
+    public Page<TransactionResponse> getAll(Boolean isUp, Boolean isDown, String status, String rangerId, String hikerId, String mountainId, String hikerName, SearchRequest searchRequest) {
         Ranger ranger = findRangerById(rangerId);
         Hiker hiker = findHikerById(hikerId);
         Mountain mountain = findMountainById(mountainId);
 
-        TransactionSpecification specification = new TransactionSpecification(isUp, isDown, status, ranger, hiker, mountain);
+        TransactionSpecification specification = new TransactionSpecification(isUp, isDown, status, ranger, hiker, mountain, hikerName);
         Sort.Direction sortDirection = searchRequest.getDirection().equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(searchRequest.getPage(), searchRequest.getSize(), sortDirection, searchRequest.getSortBy());
         Page<Transaction> transactionPage = transactionRepository.findAll(specification, pageable);
@@ -124,13 +129,8 @@ public class TransactionServiceImpl implements TransactionService {
     private Boolean checkIfMountainQuotaFull(TransactionRequest request, Mountain mountain){
         String startDate = request.getStartDate().substring(0, 10);
         System.out.println(startDate);
-
         Integer startDateCount = transactionRepository.countTotalTransactionByStartDateAndIsUp(startDate, mountain.getId());
         Integer endDateCount = transactionRepository.countTotalTransactionByEndDateAndIsUp(startDate, mountain.getId());
-        System.out.println("Start date count: " + startDateCount);
-        System.out.println("End date count: " + endDateCount);
-        System.out.println("Mountain quota: " + mountain.getQuotaLimit());
-
         return startDateCount + endDateCount >= mountain.getQuotaLimit();
     }
 

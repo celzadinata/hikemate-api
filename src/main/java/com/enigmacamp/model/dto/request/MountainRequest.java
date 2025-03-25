@@ -1,6 +1,8 @@
 package com.enigmacamp.model.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 public class MountainRequest {
     private String id;
+    @NotEmpty(message = "Mountain name should not be empty")
+    @NotNull(message = "Mountain name should not be empty")
     private String name;
     private String location;
     private String status;
@@ -32,4 +36,7 @@ public class MountainRequest {
     private NewUserRequest assignedRanger;
     private MultipartFile image;
     private List<MultipartFile> baseCampImages;
+
+    @JsonAlias("mountain_routes")
+    private List<RouteRequest> mountainRoutes;
 }

@@ -28,6 +28,7 @@ public class MountainResponse {
     private Boolean isOpen;
     private String mountainCoverUrl;
     private List<String> baseCampImagesUrl;
+    private List<MountainRouteResponse> mountainRoutes;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private RangerResponse rangerResponse;
     private Timestamp createdAt;

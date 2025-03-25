@@ -14,7 +14,7 @@ public interface HikerService {
     Page<HikerResponse> getAllHikers(SearchRequest pageable);
     HikerResponse getById(String id);
     HikerResponse updateHiker(HikerRequest request);
-    void delete(String id);
+    HikerResponse delete(String id);
     Hiker getByIdEntity(String id);
     Hiker getByUserAccountEntity(UserAccount userAccount);
 }

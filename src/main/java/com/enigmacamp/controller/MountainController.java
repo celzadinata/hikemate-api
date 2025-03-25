@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -52,11 +53,7 @@ public class MountainController {
                     .header("Content-Type", "application/json")
                     .body(response);
         } catch (Exception e) {
-            System.out.println("error: {} " + e.getLocalizedMessage());
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .header("Content-Type", "application/json")
-                    .body("Terjadi kesalahan pada PostMapping Mountain Controller: " +  e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage().replace("400 BAD_REQUEST", ""));
         }
     }
 
